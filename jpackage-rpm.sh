@@ -1,5 +1,5 @@
 #!/bin/bash
-/usr/bin/jpackage \
+jpackage \
 -n mtgacollection \
 --runtime-image ./target/jlink-image \
 --module hirsizlik.mtgacollection/hirsizlik.mtgacollection.main.MTGACollectionMain \
