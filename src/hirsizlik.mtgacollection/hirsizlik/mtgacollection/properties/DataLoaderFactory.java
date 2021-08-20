@@ -4,6 +4,8 @@ import hirsizlik.mtgacollection.arguments.ProgramArguments;
 
 /**
  * Factory class to create a data loader.
+ *
+ * @author Markus Schagerl
  * @see DataLoader
  */
 public class DataLoaderFactory {
@@ -12,6 +14,7 @@ public class DataLoaderFactory {
 
 	/**
 	 * Creates a DataLoader based on program arguments and the operating system.
+	 *
 	 * @param arguments die program arguments
 	 * @return the created data loader
 	 */

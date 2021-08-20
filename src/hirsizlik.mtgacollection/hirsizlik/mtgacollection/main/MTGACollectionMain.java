@@ -22,10 +22,10 @@ import hirsizlik.mtgacollection.run.RunException;
 import hirsizlik.mtgacollection.run.VersionRun;
 
 /**
- * The class with the main-Method. Here all begins.
- * First the Arguments are parsed, then the Run given by the parsed Arguments is executed.
- * @author Markus Schagerl
+ * The class with the main-Method. Here all begins. First the Arguments are
+ * parsed, then the Run given by the parsed Arguments is executed.
  *
+ * @author Markus Schagerl
  */
 public class MTGACollectionMain {
 

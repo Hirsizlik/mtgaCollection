@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Prints help for each supported run.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class PrintHelpRun implements Run{
 
@@ -17,6 +17,7 @@ public class PrintHelpRun implements Run{
 
 	/**
 	 * Creates the run.
+	 *
 	 * @param runList the List of all runs for which help will be printed.
 	 */
 	public PrintHelpRun(final List<Run> runList) {

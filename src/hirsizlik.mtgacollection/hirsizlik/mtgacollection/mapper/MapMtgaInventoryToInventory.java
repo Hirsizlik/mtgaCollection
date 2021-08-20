@@ -18,8 +18,8 @@ import hirsizlik.mtgacollection.jackson.inventory.PlayerInventory;
 
 /**
  * Maps the raw inventory data (json from logs) to a more manageable class.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class MapMtgaInventoryToInventory implements Mapper<PlayerInventory, Inventory>{
 

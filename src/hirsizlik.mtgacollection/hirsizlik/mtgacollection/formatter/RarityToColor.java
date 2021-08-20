@@ -4,6 +4,7 @@ import hirsizlik.mtgacollection.bo.Rarity;
 
 /**
  * Utility class which maps a color to each Rarity used in AsciiStringHelper.
+ *
  * @author Markus Schagerl
  * @see AsciiStringHelper
  */
@@ -21,6 +22,7 @@ public class RarityToColor {
 	 * <li>Mythic &rarr; Red</li>
 	 * <li>any other rarity &rarr; default color</li>
 	 * </ul>
+	 *
 	 * @param r the rarity
 	 * @return the color
 	 */

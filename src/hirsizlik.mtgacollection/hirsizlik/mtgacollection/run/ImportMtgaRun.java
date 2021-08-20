@@ -32,6 +32,7 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetQuirk;
 
 /**
  * Run to import cards from MTGA (MTGA_Data/Downloads/Data)
+ *
  * @author Markus Schagerl
  */
 public class ImportMtgaRun implements Run {
@@ -46,13 +47,12 @@ public class ImportMtgaRun implements Run {
 
 	/**
 	 * A pair with the name prefix and the path to the corresponding file.
-	 * @author Markus Schagerl
-	 *
 	 */
 	private static record NamePathPair(String name, Path path) {}
 
 	/**
 	 * Creates the run
+	 *
 	 * @param p the properties, "mtga.path" to get the path to the game files
 	 * @param sqLiteDAO access to the database
 	 */
@@ -129,6 +129,7 @@ public class ImportMtgaRun implements Run {
 
 	/**
 	 * Searches for unknown sets and adds them to the database.
+	 *
 	 * @return true if Sets were added, otherwise false
 	 */
 	private boolean updateSets(final List<MtgaCard> allCards, final SetInfoLoader setInfoLoader)
@@ -145,6 +146,7 @@ public class ImportMtgaRun implements Run {
 
 	/**
 	 * Loads Set information from Scryfall and adds them to the database if found.
+	 *
 	 * @param unknownSets Set codes of all unknown sets.
 	 */
 	private boolean loadAndAddUnknownSets(final Set<String> unknownSets)

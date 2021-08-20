@@ -5,9 +5,10 @@ import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.LoggerContext;
 
 /**
- * A simple LoggerContext for log4j2, always returning a new Logger at getLogger.
- * @author Markus Schagerl
+ * A simple LoggerContext for log4j2, always returning a new Logger at
+ * getLogger.
  *
+ * @author Markus Schagerl
  */
 public class MtgaCollectionLoggerContext implements LoggerContext{
 

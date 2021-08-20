@@ -5,8 +5,8 @@ import java.util.Objects;
 
 /**
  * Class holding information about a set.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record SetInfo(
 		/** the 3-letter set code */
@@ -22,6 +22,7 @@ public record SetInfo(
 
 	/**
 	 * Checks if the set is released before a certain date
+	 *
 	 * @param date the date to check, may not be null
 	 * @return true if the set is released before the given date
 	 */

@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * All VanityItems (pets, avatars and cardbacks)
+ *
  * @author Markus Schagerl
  * @see VanityItem
  * @see Pet

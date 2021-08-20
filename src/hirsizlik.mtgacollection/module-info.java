@@ -4,8 +4,8 @@ import org.apache.logging.log4j.spi.Provider;
  * The module-info of this program.
  * This module is not intended to be used by other modules.
  * The one exports here is only because a warning says so.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  * @provides Provider, providing a log4j implementation
  */
 module hirsizlik.mtgacollection {

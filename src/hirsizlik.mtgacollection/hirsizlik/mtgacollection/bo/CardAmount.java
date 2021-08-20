@@ -10,6 +10,7 @@ public record CardAmount(int commons, int uncommons, int rares, int mythics) {
 
 	/**
 	 * Returns the amount of cards of that rarity.
+	 *
 	 * @param r the rarity to check
 	 * @return the amount of cards with that rarity
 	 */

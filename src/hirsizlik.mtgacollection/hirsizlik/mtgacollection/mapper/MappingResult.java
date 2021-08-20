@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 
 /**
  * Represents the result of a mapping process.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  * @param <T> the result type (if mapping was ok)
  * @param <B> the input type
  */
@@ -24,6 +24,7 @@ public class MappingResult<B, T> {
 	/**
 	 * Creates a error with a message.
 	 * The error is marked as important.
+	 *
 	 * @param <B> the base type
 	 * @param <T> the result type, unused as this is a error
 	 * @param notMappableObject the object that wasn't mapped
@@ -36,6 +37,7 @@ public class MappingResult<B, T> {
 
 	/**
 	 * Creates a error with a message.
+	 *
 	 * @param <B> the base type
 	 * @param <T> the result type, unused as this is a error
 	 * @param notMappableObject the object that wasn't mapped
@@ -52,6 +54,7 @@ public class MappingResult<B, T> {
 
 	/**
 	 * Creates a successful result.
+	 *
 	 * @param <B> the base type
 	 * @param <T> the result type
 	 * @param base the base object
@@ -64,6 +67,7 @@ public class MappingResult<B, T> {
 
 	/**
 	 * Executes the consumer if this depicts a successful mapping, otherwise runs the Runnable.
+	 *
 	 * @param consumerOk the consumer which will be run if ok
 	 * @param notOk the runnable executed if not ok
 	 */
@@ -77,6 +81,7 @@ public class MappingResult<B, T> {
 
 	/**
 	 * Simply returns true if this mapping is successful, otherwise execute the consumer with this object.
+	 *
 	 * @param elseDo the consumer executed if not successful.
 	 * @return true if successful, false otherwise
 	 */
@@ -91,6 +96,7 @@ public class MappingResult<B, T> {
 
 	/**
 	 * Returns the mapped type if successful, otherwise throw the MappingException.
+	 *
 	 * @return the mapped type
 	 * @throws MappingException the exception if not successful
 	 */

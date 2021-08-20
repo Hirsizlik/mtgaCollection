@@ -13,8 +13,8 @@ import org.apache.logging.log4j.Logger;
  * Prints the version of this jar.
  * For that, the manifest is read, using the "Implementation-Version" Field.
  * Warning, does only work if built as jar, as otherwise there is no MANIFEST.MF to read.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class VersionRun implements Run{
 

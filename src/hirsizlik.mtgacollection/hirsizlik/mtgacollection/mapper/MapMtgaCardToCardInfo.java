@@ -10,8 +10,8 @@ import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
 
 /**
  * Maps a card from the MTGA json files to a card used in this program.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 
@@ -20,6 +20,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 
 	/**
 	 * Creates the Mapper.
+	 *
 	 * @param locMap the english localisation map, used to map name ids to their english name.
 	 * @param setInfoLoader to load the set for a card. Unknown sets produce a error.
 	 */

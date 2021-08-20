@@ -14,6 +14,7 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetType;
 /**
  * Maps the data from Scryfall (using a generated class) into a internally used class.
  * Doesn't use SetInfo as those represent sets from the database.
+ *
  * @author Markus Schagerl
  * @see ScryfallSet ScryfallSet (from JSON generated class)
  * @see ScryfallSetInfo ScryfallSetInfo (internal class)

@@ -15,8 +15,8 @@ import hirsizlik.mtgacollection.mapper.MapMtgaInventoryToInventory;
  * Class to read the inventory and collected cards from the log file.
  * Actual file reading happens in {@link LogfileBlockReader}. Here the read json blocks are mapped to
  * their classes.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class LogfileParser {
 
@@ -38,6 +38,7 @@ public class LogfileParser {
 
 	/**
 	 * Starts the parsing, returning the parsed inventory and collected cards.
+	 *
 	 * @param pathToLogfile the path to the logfile
 	 * @param setInfoLoader to load SetInformation, used for the inventory
 	 * @return a instance of this class with the inventory and a map of all collected cards and the amount of them.

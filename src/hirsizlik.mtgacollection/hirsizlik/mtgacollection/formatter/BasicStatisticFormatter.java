@@ -5,6 +5,7 @@ import hirsizlik.mtgacollection.bo.Statistic;
 
 /**
  * Formats a statistic in a basic (but not ugly) form and fashion.
+ *
  * @author Markus Schagerl
  */
 public class BasicStatisticFormatter implements StatisticFormatter{

@@ -13,8 +13,8 @@ import java.util.Set;
 
 /**
  * Reads the logfile and extracts blocks (marked by '{' and '}') after strings.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class LogfileBlockReader implements AutoCloseable{
 	private final FileChannel fc;
@@ -25,6 +25,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Creates a new reader. Has to be closed after done business.
+	 *
 	 * @param pathToLogfile path to log
 	 * @throws IOException error while opening the channel
 	 */
@@ -35,6 +36,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Returns blocks after the given lines
+	 *
 	 * @param searchLines the lines to be searched and the block following to be returned. Each value has to be unique.
 	 * @return the map with the searchLine as key and the found block as value
 	 * @throws IOException error while doing buffer stuff
@@ -80,6 +82,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Reads the blocks after their found start positions
+	 *
 	 * @param blockStartAt array of block start positions.
 	 * @param searchLines the search lines
 	 * @return Map with search line as key and block string as value
@@ -99,6 +102,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Check if the one of the given search lines would bust the buffer
+	 *
 	 * @param searchLines the lines
 	 * @throws IllegalArgumentException if a line would bust the buffer
 	 */
@@ -112,6 +116,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Checks if the array contains duplicate values and throws if so.
+	 *
 	 * @param searchLines the lines
 	 * @throws IllegalArgumentException a duplicate value was found
 	 */
@@ -124,6 +129,7 @@ public class LogfileBlockReader implements AutoCloseable{
 
 	/**
 	 * Reads the next JSON block starting from the provided position.
+	 *
 	 * @param position the fileChannel-position to start reading from
 	 * @return the next JSON block after the position
 	 * @throws IOException error while reading
@@ -155,6 +161,7 @@ public class LogfileBlockReader implements AutoCloseable{
 	/**
 	 * Clears the ByteBuffer, reads from the FileChannel, flips the buffer and returns the
 	 * amount of bytes read.
+	 *
 	 * @return bytes read
 	 * @throws IOException error during reading
 	 */
@@ -170,6 +177,7 @@ public class LogfileBlockReader implements AutoCloseable{
 	 * Sets a value in the array if a search if a search line matches.
 	 * That value equals the position before the starting '{' after the search line.
 	 * The latter found position is used if multiple are found.
+	 *
 	 * @param foundStartsAt set of positions where a search line may be found
 	 * @param blockStartAt will be set if a search line was found
 	 * @param searchLines the search pattern
@@ -208,6 +216,7 @@ public class LogfileBlockReader implements AutoCloseable{
 	 * Checks if the ByteBuffer starts with the the given byte[].
 	 * If so true will be returned, otherwise false.
 	 * The buffer will be reset if false is returned.
+	 *
 	 * @param searchLineBA the line as byte[]
 	 * @return true if the Buffer starts with the searchLine, otherwise false.
 	 */

@@ -11,8 +11,8 @@ import hirsizlik.mtgacollection.bo.SetInfo;
 
 /**
  * Manages Sets, allowing them to be searched by Code.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class SetInfoLoader {
 	private final Map<String, SetInfo> setMapByCode = new HashMap<>();
@@ -22,6 +22,7 @@ public class SetInfoLoader {
 	/**
 	 * Constructs this loader using the data from the database.
 	 * Prepares the data for easier searching.
+	 *
 	 * @param setInfoMapFromDb sets from database
 	 */
 	public SetInfoLoader(final Map<String, SetInfo> setInfoMapFromDb) {
@@ -33,6 +34,7 @@ public class SetInfoLoader {
 
 	/**
 	 * Returns the Set with the specified code, or the unknown is if no such set was found.
+	 *
 	 * @param code the setcode (usually a 3-letter-code).
 	 * @return the SetInfo with that code, or the unknown set
 	 */

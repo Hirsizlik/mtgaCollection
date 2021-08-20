@@ -6,9 +6,10 @@ import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 
 /**
- * A simple LoggerContextFactory which always returns the same MtgaCollectionLoggerContext created at instantiation.
- * @author Markus Schagerl
+ * A simple LoggerContextFactory which always returns the same
+ * MtgaCollectionLoggerContext created at instantiation.
  *
+ * @author Markus Schagerl
  */
 public class MtgaCollectionLoggerContextFactory implements LoggerContextFactory {
 

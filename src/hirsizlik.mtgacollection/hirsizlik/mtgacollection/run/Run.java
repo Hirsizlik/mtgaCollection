@@ -2,12 +2,13 @@ package hirsizlik.mtgacollection.run;
 
 /**
  * Interface for each run.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public interface Run {
 	/**
 	 * Executes the run.
+	 *
 	 * @throws RunException thrown for any unrecoverable error during the run
 	 */
 	void run() throws RunException;

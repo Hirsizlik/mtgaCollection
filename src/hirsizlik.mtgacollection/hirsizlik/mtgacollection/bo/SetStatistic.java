@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 /**
  * Holds statistics for a single set.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class SetStatistic implements Statistic {
 
@@ -28,6 +28,7 @@ public class SetStatistic implements Statistic {
 
 	/**
 	 * Creates a new object. The data is read and prepared while doing so.
+	 *
 	 * @param set the set a statistic is created for. The name of that set is used as name for this statistic.
 	 * @param cards the list of cards
 	 * @param cardsOwned a map with key = cardId and value = amount of cards

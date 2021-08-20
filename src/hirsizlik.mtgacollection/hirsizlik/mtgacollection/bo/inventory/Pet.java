@@ -4,8 +4,8 @@ import java.util.List;
 
 /**
  * A pet and its variants (levels)
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record Pet(
 		/** the pet name*/

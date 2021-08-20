@@ -30,8 +30,8 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
 
 /**
  * Run which prints all cards currently in possession.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class AllCardsRun implements Run{
 
@@ -42,8 +42,6 @@ public class AllCardsRun implements Run{
 
 	/**
 	 * A value for each possible filter containing its implementation as BiPredicate.
-	 * @author Markus Schagerl
-	 *
 	 */
 	private enum Filter{
 		RARITY((c, n) -> n.equals(c.cardInfo.rarity().getName())),
@@ -63,6 +61,7 @@ public class AllCardsRun implements Run{
 
 	/**
 	 * Creates the run.
+	 *
 	 * @param p the properties, using "log.path" to read the log file and "colors" to decide if ANSI colors
 	 * should be used.
 	 * @param sqLiteDAO access to the SqLite-Database
