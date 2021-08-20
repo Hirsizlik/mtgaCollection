@@ -4,8 +4,8 @@ import hirsizlik.mtgacollection.bo.Rarity;
 
 /**
  * Class for wildcards and the current trackPosition.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record Wildcard(
 		/** amount of common wildcards */
@@ -27,6 +27,7 @@ public record Wildcard(
 
 	/**
 	 * Returns the amount of cards of a certain rarity.
+	 *
 	 * @param rarity the rarity to check
 	 * @return the amount of wildcards of that rarity, or 0 if the rarity has no respective wildcard (UNKNOWN and LAND)
 	 */
@@ -42,6 +43,7 @@ public record Wildcard(
 
 	/**
 	 * Returns the amount of pack openings required to acquire a new wildcard of the given rarity.
+	 *
 	 * @param rarity the rarity of the wildcard
 	 * @return the amount of pack openings to the next wildcard, or 0 if there are no such wildcards.
 	 */

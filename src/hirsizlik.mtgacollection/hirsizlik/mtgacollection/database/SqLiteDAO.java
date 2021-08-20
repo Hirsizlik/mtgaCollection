@@ -24,7 +24,6 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetInfo;
  * cards and sets.
  *
  * @author Markus Schagerl
- *
  */
 public class SqLiteDAO implements AutoCloseable{
 

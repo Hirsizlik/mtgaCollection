@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Parses ProgramArguments.
+ * Reads the given program arguments and parses them.
  *
+ * @author Markus Schagerl
  * @see ProgramArguments
  */
 public class ArgumentParser {
@@ -20,6 +21,7 @@ public class ArgumentParser {
 	/**
 	 * Initializes the parser with the program arguments.
 	 * To parse, use the {@link #parseArguments()} method.
+	 *
 	 * @param args the program arguments (from main)
 	 */
 	public ArgumentParser(final String[] args) {
@@ -28,6 +30,7 @@ public class ArgumentParser {
 
 	/**
 	 * Parses the arguments from the array given in the constructor.
+	 *
 	 * @return the parsed arguments
 	 */
 	public ProgramArguments parseArguments() {

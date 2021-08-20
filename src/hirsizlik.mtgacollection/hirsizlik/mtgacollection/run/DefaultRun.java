@@ -33,8 +33,8 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
 
 /**
  * The default run. Reads the log file, then prints the contents of the inventory and set statistics.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class DefaultRun implements Run{
 
@@ -46,6 +46,7 @@ public class DefaultRun implements Run{
 
 	/**
 	 * Creates the run.
+	 *
 	 * @param p the properties, "log.path" to read the log file and
 	 * "colors" to determine if ANSI colors should be used
 	 * @param sqliteDAO access to the database

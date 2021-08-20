@@ -2,6 +2,8 @@ package hirsizlik.mtgacollection.scryfall;
 
 /**
  * Set Types from Scryfall.
+ *
+ * @author Markus Schagerl
  */
 public enum ScryfallSetType {
 	/** A yearly Magic core set (Tenth Edition, etc) */

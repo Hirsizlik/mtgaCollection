@@ -17,6 +17,8 @@ import hirsizlik.mtgacollection.mapper.MapScryfallSet;
 
 /**
  * Access to Scryfall using their API (over HTTPS)
+ *
+ * @author Markus Schagerl
  */
 public class ScryfallDAO {
 
@@ -31,6 +33,7 @@ public class ScryfallDAO {
 
 	/**
 	 * Loads the Set from Scryfall
+	 *
 	 * @param setCode the SetCode
 	 * @return the Set from Scryfall (optional, empty if not found)
 	 * @throws IOException Error from HttpClient (except 404, then empty)
@@ -64,6 +67,7 @@ public class ScryfallDAO {
 
 	/**
 	 * Sleeps if the duration since last access is less than MIN_DURATION_BETWEEN_CALLS.
+	 *
 	 * @throws InterruptedException thrown by sleep, should never happen
 	 */
 	private void sleepIfToFastAndSetLastAccess() throws InterruptedException {

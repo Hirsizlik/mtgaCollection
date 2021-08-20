@@ -2,8 +2,8 @@ package hirsizlik.mtgacollection.bo.inventory;
 
 /**
  * Describes the amount of booster of a set currently owned.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record Booster(
 		/** the amount of booster packs currently owned*/
@@ -25,6 +25,7 @@ public record Booster(
 	// Note: collationId of draft packs start with 2, cubes start wit 3. both not included here
 	/**
 	 * Returns the set code corresponding to this packs collationId.
+	 *
 	 * @return the set code of this booster, or it's collationId if unknown.
 	 */
 	public String getSetCodeFromCollation() {

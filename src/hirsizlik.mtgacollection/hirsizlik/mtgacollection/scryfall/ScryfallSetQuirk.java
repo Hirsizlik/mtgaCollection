@@ -5,8 +5,8 @@ import java.util.Optional;
 
 /**
  * Certain Sets from Scryfall and MTGA don't match or are missing. This class adds workarounds for those.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public final class ScryfallSetQuirk {
 
@@ -15,6 +15,7 @@ public final class ScryfallSetQuirk {
 	/**
 	 * Translates set codes in Arena which are not found in Scryfall.
 	 * Currently only "CONF" (Conflux) needs to be translated to "CON"
+	 *
 	 * @param mtgaCode the arena setcode
 	 * @return the setcode for Scryfall
 	 */
@@ -27,6 +28,7 @@ public final class ScryfallSetQuirk {
 
 	/**
 	 * Translate the set code from Scryfall to the one actually used in Arena.
+	 *
 	 * @param scryfallArenaCode the "arena_code" from Scryfall
 	 * @return the actual Arena code
 	 */
@@ -45,6 +47,7 @@ public final class ScryfallSetQuirk {
 
 	/**
 	 * Creates a fake Scryfall-Set for certain Sets that are not in Scryfall but in Arena.
+	 *
 	 * @param mtgaCode the Arena set code
 	 * @return the fake set for this code, if needed, otherwise empty
 	 */

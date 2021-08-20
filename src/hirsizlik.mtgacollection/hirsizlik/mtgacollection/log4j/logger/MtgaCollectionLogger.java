@@ -6,7 +6,8 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.spi.AbstractLogger;
 
 /**
- * Simple Implementation of Logger using AbstractLogger which logs everything with System.out.
+ * Simple Implementation of Logger using AbstractLogger which logs everything
+ * with System.out.
  *
  * @author Markus Schagerl
  * @see Logger

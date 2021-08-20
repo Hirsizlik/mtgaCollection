@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 /**
  * Statistic over multiple statistics.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class TotalStatistic implements Statistic{
 
@@ -18,6 +18,7 @@ public class TotalStatistic implements Statistic{
 
 	/**
 	 * Creates a TotalStatistic with the given name and list of statistics.
+	 *
 	 * @param name the name of this statistic
 	 * @param statistics the sub statistics
 	 */
@@ -33,6 +34,7 @@ public class TotalStatistic implements Statistic{
 
 	/**
 	 * Calculates the sum of something over the statistics.
+	 *
 	 * @param toIntF the Function that extracts the value from the statistic to sum
 	 * @return the sum of something
 	 */
@@ -42,6 +44,7 @@ public class TotalStatistic implements Statistic{
 
 	/**
 	 * Checks if any statistic matches the given predicate
+	 *
 	 * @param sPredicate the statistic predicate
 	 * @return true if any matches
 	 */

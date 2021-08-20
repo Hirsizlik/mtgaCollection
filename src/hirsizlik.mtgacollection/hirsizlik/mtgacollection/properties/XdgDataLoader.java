@@ -7,6 +7,8 @@ import java.util.Optional;
 /**
  * Loads the files following the XDG specification from $XDG_CONFIG_HOME, or if not set from $HOME/.config
  * A subfolder named "MTGA-Collection" will be used.
+ *
+ * @author Markus Schagerl
  */
 class XdgDataLoader implements DataLoader {
 

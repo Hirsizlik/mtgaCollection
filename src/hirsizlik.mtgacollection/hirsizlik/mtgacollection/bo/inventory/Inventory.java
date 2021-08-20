@@ -10,7 +10,6 @@ import hirsizlik.mtgacollection.bo.Rarity;
  * currencies, booster, and vanity stuff.
  *
  * @author Markus Schagerl
- *
  */
 public record Inventory(
 		/** The MTGA playerId */

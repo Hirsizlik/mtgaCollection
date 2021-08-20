@@ -11,8 +11,8 @@ import hirsizlik.mtgacollection.jackson.mtga.localisation.Localisation;
 
 /**
  * Parses the MTGA card and localization files.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public final class MtgaCardLocParser {
 
@@ -20,8 +20,8 @@ public final class MtgaCardLocParser {
 
 	/**
 	 * Holds the parsed values.
-	 * @author Markus Schagerl
 	 *
+	 * @author Markus Schagerl
 	 */
 	public static record MtgaCardLoc(
 			/** the parsed list of cards */
@@ -31,6 +31,7 @@ public final class MtgaCardLocParser {
 
 	/**
 	 * Parses the files with the card and localization data.
+	 *
 	 * @param toCard path to the file containing card information
 	 * @param toLoc path to the file containing localization information
 	 * @return the parsed results

@@ -19,8 +19,8 @@ import hirsizlik.mtgacollection.properties.DataLoader;
 
 /**
  * Run to initiate the database and the properties.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class InitRun implements Run {
 

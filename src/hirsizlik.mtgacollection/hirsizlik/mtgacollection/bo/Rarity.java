@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Information about card rarities.
+ *
  * @author Markus Schagerl
  *
  */
@@ -65,6 +66,7 @@ public enum Rarity {
 
 	/**
 	 * Gets the value with the given database code.
+	 *
 	 * @param code the database code
 	 * @return the Rarity with that code, or UNKNOWN if there is no such value
 	 */
@@ -74,6 +76,7 @@ public enum Rarity {
 
 	/**
 	 * Gets the value with the given code used by MTGA.
+	 *
 	 * @param code the MTGA code
 	 * @return the Rarity with that code, or UNKNOWN if there is no such value
 	 */

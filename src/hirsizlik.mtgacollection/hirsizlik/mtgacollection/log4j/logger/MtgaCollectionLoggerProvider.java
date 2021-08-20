@@ -3,9 +3,10 @@ package hirsizlik.mtgacollection.log4j.logger;
 import org.apache.logging.log4j.spi.Provider;
 
 /**
- * A Log4j2 Provider providing the MtgaCollectionLoggerContextFactory with a low priority.
- * @author Markus Schagerl
+ * A Log4j2 Provider providing the MtgaCollectionLoggerContextFactory with a low
+ * priority.
  *
+ * @author Markus Schagerl
  */
 public class MtgaCollectionLoggerProvider extends Provider {
 

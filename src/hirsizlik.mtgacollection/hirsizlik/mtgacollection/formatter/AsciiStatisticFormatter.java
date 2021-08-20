@@ -4,9 +4,10 @@ import hirsizlik.mtgacollection.bo.Rarity;
 import hirsizlik.mtgacollection.bo.Statistic;
 
 /**
- * Formats a statistic using the power of ASCII-Escape-Codes.
- * Prints the set name in bold and historic-only sets in italic.
- * Each rarity has it's own color.
+ * Formats a statistic using the power of ASCII-Escape-Codes. Prints the set
+ * name in bold and historic-only sets in italic. Each rarity has it's own
+ * color.
+ *
  * @author Markus Schagerl
  * @see AsciiStringHelper
  * @see RarityToColor

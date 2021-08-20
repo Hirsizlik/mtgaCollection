@@ -7,6 +7,8 @@ import hirsizlik.mtgacollection.arguments.ProgramArguments;
 
 /**
  * Loads the data from via program arguments.
+ *
+ * @author Markus Schagerl
  */
 class ManualDataLoader implements DataLoader {
 

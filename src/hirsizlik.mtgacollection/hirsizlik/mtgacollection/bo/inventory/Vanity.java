@@ -2,8 +2,8 @@ package hirsizlik.mtgacollection.bo.inventory;
 
 /**
  * All Vanity items and their selections.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record Vanity(
 		/** All vanity items*/

@@ -2,8 +2,8 @@ package hirsizlik.mtgacollection.bo.inventory;
 
 /**
  * Class for different currencies currently owned.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public record Currency(
 		/** amount of gold*/
@@ -17,6 +17,7 @@ public record Currency(
 
 	/**
 	 * Checks if any tokens (draft + sealed) are currently owned.
+	 *
 	 * @return true if any token is owned, otherwise false
 	 */
 	public boolean hasDraftOrSealedTokens() {

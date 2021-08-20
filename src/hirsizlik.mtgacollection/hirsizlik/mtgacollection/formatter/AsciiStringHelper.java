@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 /**
  * Helperclass to format a encoded string with Ansi escape sequenced.
+ *
  * @author Markus Schagerl
  * @see https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
  */
@@ -29,6 +30,7 @@ public class AsciiStringHelper {
 	 * WHITE, CYAN, YELLOW and RED, Styles are BOLD and ITALIC. DEFAULT returns the style back to normal.
 	 * Use a '@' to encode a color.
 	 * For example: <div><code>"@CYANI am in Cyan@BOLD and now also bold@DEFAULT and back to normal."</code></div>
+	 *
 	 * @param codedString the encoded string
 	 * @return the string with ansi escape sequences
 	 */

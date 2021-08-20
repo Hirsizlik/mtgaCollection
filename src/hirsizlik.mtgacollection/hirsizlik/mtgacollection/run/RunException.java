@@ -2,8 +2,8 @@ package hirsizlik.mtgacollection.run;
 
 /**
  * Exception for errors during a run.
- * @author Markus Schagerl
  *
+ * @author Markus Schagerl
  */
 public class RunException extends Exception {
 
@@ -11,6 +11,7 @@ public class RunException extends Exception {
 
 	/**
 	 * Creates a RunException with a cause
+	 *
 	 * @param cause the cause
 	 */
 	public RunException(final Exception cause) {
