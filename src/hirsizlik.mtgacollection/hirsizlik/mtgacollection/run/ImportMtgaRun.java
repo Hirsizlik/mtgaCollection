@@ -37,8 +37,8 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetQuirk;
  */
 public class ImportMtgaRun implements Run {
 
-	private static final String DATA_LOC = "data_loc";
-	private static final String DATA_CARDS = "data_cards";
+	private static final String DATA_LOC = "Data_loc";
+	private static final String DATA_CARDS = "Data_cards";
 	private final Path toMtgaData;
 	private final SqLiteDAO sqLiteDAO;
 	private final ScryfallDAO scryfallDAO = new ScryfallDAO();
@@ -75,7 +75,7 @@ public class ImportMtgaRun implements Run {
 		List<String> fileNames = List.of(DATA_CARDS, DATA_LOC);
 		Map<String, Path> fileMap = getMtgaFilePaths(fileNames);
 		if(fileMap.size() != fileNames.size()) {
-			throw new IllegalStateException(String.format("Not all necessary files were found (%s)", fileMap));
+			throw new IllegalStateException(String.format("Not all necessary files were found (found: %s)", fileMap));
 		}
 
 		MtgaCardLoc cardLoc = MtgaCardLocParser.parse(fileMap.get(DATA_CARDS), fileMap.get(DATA_LOC));
