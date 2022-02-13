@@ -91,8 +91,8 @@ public class DefaultRun implements Run{
 		LocalDate standardStart = determineStandardStart(setInfoLoader);
 		List<Statistic> setStatistics = setInfoLoader.getAllSets()
 			.stream()
-			.map(s -> new SetStatistic(s, cardsBySet.get(s), cardAmountMap, standardStart))
-			.collect(Collectors.toList());
+			.<Statistic>map(s -> new SetStatistic(s, cardsBySet.get(s), cardAmountMap, standardStart))
+			.toList();
 
 		StatisticFormatter formatter = colors ? new AsciiStatisticFormatter() : new BasicStatisticFormatter();
 		setStatistics.stream()
@@ -117,7 +117,7 @@ public class DefaultRun implements Run{
 				// standard always starts with a fall set, so either in September or October
 				.filter(s -> s.release().getMonth() == Month.SEPTEMBER || s.release().getMonth() == Month.OCTOBER)
 				.sorted(Comparator.comparing(SetInfo::release).reversed())
-				.collect(Collectors.toList());
+				.toList();
 
 		// standard starts with the 2nd to last fall set
 		return standardCandidates.get(1).release();

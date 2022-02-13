@@ -93,7 +93,7 @@ public class ImportMtgaRun implements Run {
 		List<CardInfo> cardInfoList = cardLoc.cardList().stream().map(cardMapper)
 				.filter(mr -> mr.returnTrueIfOkOrElse(this::doIfUnmappable))
 				.map(MappingResult::get)
-				.collect(Collectors.toList());
+				.toList();
 
 		addCards(sil, cardInfoList);
 	}
