@@ -2,7 +2,6 @@ package hirsizlik.mtgacollection.mapper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import hirsizlik.mtgacollection.bo.inventory.Booster;
 import hirsizlik.mtgacollection.bo.inventory.Currency;
@@ -54,16 +53,16 @@ public class MapMtgaInventoryToInventory implements Mapper<PlayerInventory, Inve
 	private List<Booster> mapBooster(final List<hirsizlik.mtgacollection.jackson.inventory.Booster> booster){
 		return booster.stream().map(b ->
 			new Booster(b.getCount(), b.getCollationId()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private VanityItems mapVanityItems(final hirsizlik.mtgacollection.jackson.inventory.VanityItems vanityItems){
 		List<Pet> pets = vanityItems.getPets().stream().map(p -> new Pet(p.getName(), p.getVariants()))
-				.collect(Collectors.toList());
+				.toList();
 		List<VanityItem> avatars = vanityItems.getAvatars().stream().map(a -> new VanityItem(a.getName()))
-				.collect(Collectors.toList());
+				.toList();
 		List<VanityItem> cardBacks = vanityItems.getCardBacks().stream().map(cb -> new VanityItem(cb.getName()))
-				.collect(Collectors.toList());
+				.toList();
 
 		return new VanityItems(pets, avatars, cardBacks);
 	}
