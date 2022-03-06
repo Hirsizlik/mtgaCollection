@@ -8,12 +8,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
+    "raw",
     "text"
 })
 public class Key {
 
     @JsonProperty("id")
     private Integer id;
+    @JsonProperty("raw")
+    private String raw;
     @JsonProperty("text")
     private String text;
 
@@ -25,6 +28,16 @@ public class Key {
     @JsonProperty("id")
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @JsonProperty("raw")
+    public String getRaw() {
+        return raw;
+    }
+
+    @JsonProperty("raw")
+    public void setRaw(String raw) {
+        this.raw = raw;
     }
 
     @JsonProperty("text")
@@ -45,6 +58,10 @@ public class Key {
         sb.append('=');
         sb.append(((this.id == null)?"<null>":this.id));
         sb.append(',');
+        sb.append("raw");
+        sb.append('=');
+        sb.append(((this.raw == null)?"<null>":this.raw));
+        sb.append(',');
         sb.append("text");
         sb.append('=');
         sb.append(((this.text == null)?"<null>":this.text));
@@ -60,6 +77,7 @@ public class Key {
     @Override
     public int hashCode() {
         int result = 1;
+        result = ((result* 31)+((this.raw == null)? 0 :this.raw.hashCode()));
         result = ((result* 31)+((this.id == null)? 0 :this.id.hashCode()));
         result = ((result* 31)+((this.text == null)? 0 :this.text.hashCode()));
         return result;
@@ -74,7 +92,7 @@ public class Key {
             return false;
         }
         Key rhs = ((Key) other);
-        return (((this.id == rhs.id)||((this.id!= null)&&this.id.equals(rhs.id)))&&((this.text == rhs.text)||((this.text!= null)&&this.text.equals(rhs.text))));
+        return ((((this.raw == rhs.raw)||((this.raw!= null)&&this.raw.equals(rhs.raw)))&&((this.id == rhs.id)||((this.id!= null)&&this.id.equals(rhs.id))))&&((this.text == rhs.text)||((this.text!= null)&&this.text.equals(rhs.text))));
     }
 
 }

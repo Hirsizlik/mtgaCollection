@@ -1,8 +1,8 @@
 
 package hirsizlik.mtgacollection.jackson.mtga.localisation;
 
-import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -20,7 +20,7 @@ public class Localisation {
     @JsonProperty("isoCode")
     private String isoCode;
     @JsonProperty("keys")
-    private List<Key> keys = new ArrayList<Key>();
+    private List<Key> keys = null;
 
     @JsonProperty("langkey")
     public String getLangkey() {
