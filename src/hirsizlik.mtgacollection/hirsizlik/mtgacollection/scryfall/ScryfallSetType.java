@@ -12,6 +12,8 @@ public enum ScryfallSetType {
 	EXPANSION(false),
 	/** A reprint set that contains no new cards (Modern Masters, etc) */
 	MASTERS(true),
+	/** An Arena set designed for Alchemy */
+	ALCHEMY(true),
 	/** Masterpiece Series premium foil cards */
 	MASTERPIECE(true),
 	/** From the Vault gift sets */
