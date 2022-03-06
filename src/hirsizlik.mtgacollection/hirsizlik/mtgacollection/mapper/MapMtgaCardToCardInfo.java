@@ -49,7 +49,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 			return MappingResult.createError(mtgaCard, "Card name could not be found");
 		}
 
-		// collectorMax is empty if it isn't found in pack
+		// collectorMax is null if it isn't found in pack
 		// Historic Anthologies have DigitalReleaseSet set to "AHAX" where X is the number.
 		// otherwise it is empty
 		boolean inBooster = checkInBooster(mtgaCard);
@@ -71,6 +71,6 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 			return false;
 		}
 
-		return mtgaCard.getCollectorMax().length() != 0 && mtgaCard.getDigitalReleaseSet().length() == 0;
+		return mtgaCard.getCollectorMax() != null && mtgaCard.getDigitalReleaseSet() == null;
 	}
 }
