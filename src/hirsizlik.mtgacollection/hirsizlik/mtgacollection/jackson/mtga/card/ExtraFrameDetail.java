@@ -7,47 +7,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "type",
-    "detail"
+    "1",
+    "2"
 })
 public class ExtraFrameDetail {
 
-    @JsonProperty("type")
-    private Integer type;
-    @JsonProperty("detail")
-    private String detail;
+    @JsonProperty("1")
+    private String _1;
+    @JsonProperty("2")
+    private String _2;
 
-    @JsonProperty("type")
-    public Integer getType() {
-        return type;
+    @JsonProperty("1")
+    public String get1() {
+        return _1;
     }
 
-    @JsonProperty("type")
-    public void setType(final Integer type) {
-        this.type = type;
+    @JsonProperty("1")
+    public void set1(String _1) {
+        this._1 = _1;
     }
 
-    @JsonProperty("detail")
-    public String getDetail() {
-        return detail;
+    @JsonProperty("2")
+    public String get2() {
+        return _2;
     }
 
-    @JsonProperty("detail")
-    public void setDetail(final String detail) {
-        this.detail = detail;
+    @JsonProperty("2")
+    public void set2(String _2) {
+        this._2 = _2;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(ExtraFrameDetail.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
-        sb.append("type");
+        sb.append("_1");
         sb.append('=');
-        sb.append(((this.type == null)?"<null>":this.type));
+        sb.append(((this._1 == null)?"<null>":this._1));
         sb.append(',');
-        sb.append("detail");
+        sb.append("_2");
         sb.append('=');
-        sb.append(((this.detail == null)?"<null>":this.detail));
+        sb.append(((this._2 == null)?"<null>":this._2));
         sb.append(',');
         if (sb.charAt((sb.length()- 1)) == ',') {
             sb.setCharAt((sb.length()- 1), ']');
@@ -60,13 +60,13 @@ public class ExtraFrameDetail {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.type == null)? 0 :this.type.hashCode()));
-        result = ((result* 31)+((this.detail == null)? 0 :this.detail.hashCode()));
+        result = ((result* 31)+((this._1 == null)? 0 :this._1 .hashCode()));
+        result = ((result* 31)+((this._2 == null)? 0 :this._2 .hashCode()));
         return result;
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (other == this) {
             return true;
         }
@@ -74,7 +74,7 @@ public class ExtraFrameDetail {
             return false;
         }
         ExtraFrameDetail rhs = ((ExtraFrameDetail) other);
-        return (((this.type == rhs.type)||((this.type!= null)&&this.type.equals(rhs.type)))&&((this.detail == rhs.detail)||((this.detail!= null)&&this.detail.equals(rhs.detail))));
+        return (((this._1 == rhs._1)||((this._1 != null)&&this._1 .equals(rhs._1)))&&((this._2 == rhs._2)||((this._2 != null)&&this._2 .equals(rhs._2))));
     }
 
 }

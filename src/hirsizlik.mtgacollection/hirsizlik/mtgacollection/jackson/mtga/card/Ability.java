@@ -7,33 +7,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "abilityId",
-    "textId"
+    "Id",
+    "TextId"
 })
 public class Ability {
 
-    @JsonProperty("abilityId")
-    private Integer abilityId;
-    @JsonProperty("textId")
+    @JsonProperty("Id")
+    private Integer id;
+    @JsonProperty("TextId")
     private Integer textId;
 
-    @JsonProperty("abilityId")
-    public Integer getAbilityId() {
-        return abilityId;
+    @JsonProperty("Id")
+    public Integer getId() {
+        return id;
     }
 
-    @JsonProperty("abilityId")
-    public void setAbilityId(final Integer abilityId) {
-        this.abilityId = abilityId;
+    @JsonProperty("Id")
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @JsonProperty("textId")
+    @JsonProperty("TextId")
     public Integer getTextId() {
         return textId;
     }
 
-    @JsonProperty("textId")
-    public void setTextId(final Integer textId) {
+    @JsonProperty("TextId")
+    public void setTextId(Integer textId) {
         this.textId = textId;
     }
 
@@ -41,9 +41,9 @@ public class Ability {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(Ability.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
-        sb.append("abilityId");
+        sb.append("id");
         sb.append('=');
-        sb.append(((this.abilityId == null)?"<null>":this.abilityId));
+        sb.append(((this.id == null)?"<null>":this.id));
         sb.append(',');
         sb.append("textId");
         sb.append('=');
@@ -60,13 +60,13 @@ public class Ability {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.abilityId == null)? 0 :this.abilityId.hashCode()));
         result = ((result* 31)+((this.textId == null)? 0 :this.textId.hashCode()));
+        result = ((result* 31)+((this.id == null)? 0 :this.id.hashCode()));
         return result;
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (other == this) {
             return true;
         }
@@ -74,7 +74,7 @@ public class Ability {
             return false;
         }
         Ability rhs = ((Ability) other);
-        return (((this.abilityId == rhs.abilityId)||((this.abilityId!= null)&&this.abilityId.equals(rhs.abilityId)))&&((this.textId == rhs.textId)||((this.textId!= null)&&this.textId.equals(rhs.textId))));
+        return (((this.textId == rhs.textId)||((this.textId!= null)&&this.textId.equals(rhs.textId)))&&((this.id == rhs.id)||((this.id!= null)&&this.id.equals(rhs.id))));
     }
 
 }

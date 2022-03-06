@@ -15,25 +15,25 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
 
 })
-public class AbilityIdToLinkedTokenGrpId {
+public class AbilityIdToLinkedConjurations {
 
     @JsonIgnore
-    private Map<String, List<Integer>> additionalProperties = new HashMap<String, List<Integer>>();
+    private Map<String, List<Conjuration>> additionalProperties = new HashMap<String, List<Conjuration>>();
 
     @JsonAnyGetter
-    public Map<String, List<Integer>> getAdditionalProperties() {
+    public Map<String, List<Conjuration>> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, List<Integer> value) {
+    public void setAdditionalProperty(String name, List<Conjuration> value) {
         this.additionalProperties.put(name, value);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(AbilityIdToLinkedTokenGrpId.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append(AbilityIdToLinkedConjurations.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("additionalProperties");
         sb.append('=');
         sb.append(((this.additionalProperties == null)?"<null>":this.additionalProperties));
@@ -58,10 +58,10 @@ public class AbilityIdToLinkedTokenGrpId {
         if (other == this) {
             return true;
         }
-        if ((other instanceof AbilityIdToLinkedTokenGrpId) == false) {
+        if ((other instanceof AbilityIdToLinkedConjurations) == false) {
             return false;
         }
-        AbilityIdToLinkedTokenGrpId rhs = ((AbilityIdToLinkedTokenGrpId) other);
+        AbilityIdToLinkedConjurations rhs = ((AbilityIdToLinkedConjurations) other);
         return ((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties)));
     }
 
