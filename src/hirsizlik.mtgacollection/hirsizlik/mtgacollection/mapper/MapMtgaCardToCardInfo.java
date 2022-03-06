@@ -35,8 +35,8 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 			return MappingResult.createError(mtgaCard, "Card is a token", false);
 		}
 
-		if(Boolean.FALSE.equals(mtgaCard.getIsPrimaryCard())) {
-			return MappingResult.createError(mtgaCard, "Card is not primary (e.g. half of a split card)", false);
+		if(Boolean.TRUE.equals(mtgaCard.getIsSecondaryCard())) {
+			return MappingResult.createError(mtgaCard, "Card is secondary (e.g. half of a split card)", false);
 		}
 
 		SetInfo setInfo = sil.getByCode(mtgaCard.getSet());
