@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -183,7 +184,8 @@ public class ImportMtgaRun implements Run {
 	}
 
 	private static Map<Integer, String> mapLocalisation(final Localisation loc){
-		return loc.getKeys().stream().collect(Collectors.toMap(Key::getId, Key::getText));
+		return loc.getKeys().stream().collect(Collectors.toMap(Key::getId,
+				k -> Objects.requireNonNullElse(k.getRaw(), k.getText())));
 	}
 
 	private Map<String, Path> getMtgaFilePaths(final List<String> nameStart) throws IOException{
