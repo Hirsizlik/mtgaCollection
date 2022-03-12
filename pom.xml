@@ -5,7 +5,7 @@
 
 	<groupId>hirsizlik.mtgacollection</groupId>
 	<artifactId>mtgacollection</artifactId>
-	<version>17</version>
+	<version>18</version>
 	<packaging>jar</packaging>
 
 	<properties>
