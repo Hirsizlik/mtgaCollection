@@ -25,7 +25,7 @@ import hirsizlik.mtgacollection.bo.Statistic;
 import hirsizlik.mtgacollection.bo.TotalStatistic;
 import hirsizlik.mtgacollection.bo.inventory.Inventory;
 import hirsizlik.mtgacollection.database.SetInfoLoader;
-import hirsizlik.mtgacollection.database.SqLiteDAO;
+import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.formatter.AsciiStatisticFormatter;
 import hirsizlik.mtgacollection.formatter.BasicStatisticFormatter;
 import hirsizlik.mtgacollection.formatter.StatisticFormatter;
@@ -39,7 +39,7 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
 public class DefaultRun implements Run{
 
 	private final Path toLog;
-	private final SqLiteDAO sqliteDAO;
+	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
 	private final boolean colors;
 
 	private static final Logger logger = LogManager.getLogger();
@@ -49,12 +49,12 @@ public class DefaultRun implements Run{
 	 *
 	 * @param p the properties, "log.path" to read the log file and
 	 * "colors" to determine if ANSI colors should be used
-	 * @param sqliteDAO access to the database
+	 * @param mtgaCollectionDbDAO access to the database
 	 */
-	public DefaultRun(final Properties p, final SqLiteDAO sqliteDAO) {
+	public DefaultRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO) {
 		toLog = Paths.get(p.getProperty("log.path"));
 		colors = Boolean.parseBoolean(p.getProperty("colors"));
-		this.sqliteDAO = sqliteDAO;
+		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class DefaultRun implements Run{
 	}
 
 	private void startRun() throws SQLException, IOException{
-		SetInfoLoader setInfoLoader = new SetInfoLoader(sqliteDAO.getSetMap());
+		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 
 		LogfileParser lfp = LogfileParser.parse(toLog);
 		Inventory inv = lfp.getInventory();
@@ -79,7 +79,7 @@ public class DefaultRun implements Run{
 		cardAmountMap.keySet().forEach(id -> {
 			Optional<CardInfo> oc;
 			try {
-				oc = sqliteDAO.getCard(id, setInfoLoader);
+				oc = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
 			} catch (SQLException e) {
 				throw new IllegalStateException(e);
 			}

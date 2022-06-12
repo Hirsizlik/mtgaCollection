@@ -15,7 +15,7 @@ public interface DataLoader {
 	Path getPathToProperties();
 
 	/**
-	 * @return path to the sqLite database file.
+	 * @return path to the local sqLite database file.
 	 */
 	Path getPathToDatabase();
 

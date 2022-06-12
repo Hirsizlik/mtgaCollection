@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.database.SetInfoLoader;
-import hirsizlik.mtgacollection.database.SqLiteDAO;
+import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
 import hirsizlik.mtgacollection.jackson.mtga.localisation.Key;
 import hirsizlik.mtgacollection.jackson.mtga.localisation.Localisation;
@@ -41,7 +41,7 @@ public class ImportMtgaRun implements Run {
 	private static final String DATA_LOC = "Data_loc";
 	private static final String DATA_CARDS = "Data_cards";
 	private final Path toMtgaData;
-	private final SqLiteDAO sqLiteDAO;
+	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
 	private final ScryfallDAO scryfallDAO = new ScryfallDAO();
 
 	private static final Logger logger = LogManager.getLogger();
@@ -55,11 +55,11 @@ public class ImportMtgaRun implements Run {
 	 * Creates the run
 	 *
 	 * @param p the properties, "mtga.path" to get the path to the game files
-	 * @param sqLiteDAO access to the database
+	 * @param mtgaCollectionDbDAO access to the database
 	 */
-	public ImportMtgaRun(final Properties p, final SqLiteDAO sqLiteDAO) {
+	public ImportMtgaRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO) {
 		this.toMtgaData = Paths.get(p.getProperty("mtga.path"), "MTGA_Data/Downloads/Data/");
-		this.sqLiteDAO = sqLiteDAO;
+		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
 	}
 
 	@Override
@@ -81,11 +81,11 @@ public class ImportMtgaRun implements Run {
 
 		MtgaCardLoc cardLoc = MtgaCardLocParser.parse(fileMap.get(DATA_CARDS), fileMap.get(DATA_LOC));
 
-		SetInfoLoader sil = new SetInfoLoader(sqLiteDAO.getSetMap());
+		SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 
 		if(updateSets(cardLoc.cardList(), sil)) {
 			// reload if a set was added
-			sil = new SetInfoLoader(sqLiteDAO.getSetMap());
+			sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 		}
 
 		MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(
@@ -108,17 +108,17 @@ public class ImportMtgaRun implements Run {
 			}
 			if(count == batchSize)  {
 				count = 0;
-				sqLiteDAO.executeBatchedCards();
+				mtgaCollectionDbDAO.executeBatchedCards();
 			}
 		}
 		if(count > 0) {
-			sqLiteDAO.executeBatchedCards();
+			mtgaCollectionDbDAO.executeBatchedCards();
 		}
 	}
 
 	private boolean addCardIfNew(final CardInfo c, final SetInfoLoader sil) {
 		try {
-			boolean cardAdded = sqLiteDAO.addCardIfNewBatched(c, sil);
+			boolean cardAdded = mtgaCollectionDbDAO.addCardIfNewBatched(c, sil);
 			if (cardAdded) {
 				logger.info("Added: {}", c);
 			}
@@ -162,7 +162,7 @@ public class ImportMtgaRun implements Run {
 					.findFirst();
 
 			if(setInfo.isPresent()) {
-				sqLiteDAO.addSetFromScryfallBatch(setInfo.get());
+				mtgaCollectionDbDAO.addSetFromScryfallBatch(setInfo.get());
 				logger.info("{} was added", () -> setInfo.get().code());
 				oneAdded = true;
 			} else {
@@ -170,7 +170,7 @@ public class ImportMtgaRun implements Run {
 			}
 		}
 		if(oneAdded) {
-			sqLiteDAO.executeBatchedSets();
+			mtgaCollectionDbDAO.executeBatchedSets();
 		}
 
 		return oneAdded;

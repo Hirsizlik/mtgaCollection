@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import hirsizlik.mtgacollection.arguments.ArgumentParser;
 import hirsizlik.mtgacollection.arguments.ProgramArguments;
-import hirsizlik.mtgacollection.database.SqLiteDAO;
+import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.properties.DataLoader;
 import hirsizlik.mtgacollection.properties.DataLoaderFactory;
 import hirsizlik.mtgacollection.run.AllCardsRun;
@@ -39,19 +39,18 @@ public class MTGACollectionMain {
 			return;
 		}
 
-		try(SqLiteDAO sqLiteDAO = new SqLiteDAO(dl.getPathToDatabase())) {
-			List<Run> runList = createRunList(dl, sqLiteDAO, pa.additionalArguments());
+		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
+			List<Run> runList = createRunList(dl, mtgaCollectionDbDAO, pa.additionalArguments());
 			execTheChosenOne(pa.runName(), runList);
 		}
 
 	}
 
-	private static void startInitRoutine(final DataLoader dl)
-			throws RunException, IOException, SQLException, ClassNotFoundException {
+	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException, SQLException {
 		new InitRun(dl).run();
-		try(SqLiteDAO sqLiteDAO = new SqLiteDAO(dl.getPathToDatabase())) {
+		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
 			// then import all cards and sets as normal
-			new ImportMtgaRun(loadProperties(dl), sqLiteDAO).run();
+			new ImportMtgaRun(loadProperties(dl), mtgaCollectionDbDAO).run();
 		}
 	}
 
@@ -73,18 +72,18 @@ public class MTGACollectionMain {
 	/**
 	 * Creates the list of runs.
 	 * @param dl the DataLoader, used for path to properties. Those properties may be needed in the runs.
-	 * @param sqliteDAO the DAO to access the database
+	 * @param mtgaCollectionDbDAO the DAO to access the database
 	 * @param additionalArguments additional arguments which may be used in the runs.
 	 * @return the list of runs
 	 */
-	private static List<Run> createRunList(final DataLoader dl, final SqLiteDAO sqLiteDAO,
+	private static List<Run> createRunList(final DataLoader dl, final MtgaCollectionDbDAO mtgaCollectionDbDAO,
 				final List<String> additionalArguments) throws IOException {
 		Properties p = loadProperties(dl);
 
 		return List.of(
-				new DefaultRun(p, sqLiteDAO),
-				new AllCardsRun(p, sqLiteDAO, additionalArguments),
-				new ImportMtgaRun(p, sqLiteDAO),
+				new DefaultRun(p, mtgaCollectionDbDAO),
+				new AllCardsRun(p, mtgaCollectionDbDAO, additionalArguments),
+				new ImportMtgaRun(p, mtgaCollectionDbDAO),
 				new VersionRun());
 	}
 
