@@ -1,10 +1,11 @@
 package hirsizlik.mtgacollection.mapper;
 
-import java.util.Map;
+import java.sql.SQLException;
 
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
 import hirsizlik.mtgacollection.bo.SetInfo;
+import hirsizlik.mtgacollection.database.RawCardDatabaseDAO;
 import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
 
@@ -15,17 +16,17 @@ import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
  */
 public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 
-	private final Map<Integer, String> locMap;
+	private final RawCardDatabaseDAO rawCardDatabaseDAO;
 	private final SetInfoLoader sil;
 
 	/**
 	 * Creates the Mapper.
 	 *
-	 * @param locMap the english localisation map, used to map name ids to their english name.
+	 * @param rawCardDatabaseDAO access to the Localization database.
 	 * @param setInfoLoader to load the set for a card. Unknown sets produce a error.
 	 */
-	public MapMtgaCardToCardInfo(final Map<Integer, String> locMap, final SetInfoLoader setInfoLoader) {
-		this.locMap = locMap;
+	public MapMtgaCardToCardInfo(final RawCardDatabaseDAO rawCardDatabaseDAO, final SetInfoLoader setInfoLoader) {
+		this.rawCardDatabaseDAO = rawCardDatabaseDAO;
 		this.sil = setInfoLoader;
 	}
 
@@ -44,8 +45,10 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 			return MappingResult.createError(mtgaCard, "Unknown set: " + mtgaCard.getSet());
 		}
 
-		String name = locMap.get(mtgaCard.getTitleId());
-		if(name == null) {
+		String name;
+		try {
+			name = rawCardDatabaseDAO.getEnglishNonFormattedLocalization(mtgaCard.getTitleId());
+		} catch (SQLException e) {
 			return MappingResult.createError(mtgaCard, "Card name could not be found");
 		}
 
@@ -54,7 +57,8 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 		// otherwise it is empty
 		boolean inBooster = checkInBooster(mtgaCard);
 
-		CardInfo ci = new CardInfo(mtgaCard.getGrpid(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()), setInfo, inBooster);
+		CardInfo ci = new CardInfo(mtgaCard.getGrpid(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()),
+				setInfo, inBooster);
 
 		return MappingResult.createOk(mtgaCard, ci);
 	}
