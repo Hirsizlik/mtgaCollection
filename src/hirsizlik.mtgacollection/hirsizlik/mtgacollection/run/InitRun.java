@@ -14,7 +14,7 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import hirsizlik.mtgacollection.database.SqLiteDAO;
+import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.properties.DataLoader;
 
 /**
@@ -45,7 +45,7 @@ public class InitRun implements Run {
 		}
 	}
 
-	private void runInternal() throws IOException, ClassNotFoundException, SQLException {
+	private void runInternal() throws IOException, SQLException {
 		// check properties
 		if(!Files.exists(dataloader.getPathToProperties())) {
 			LOG.warn("Properties file is missing and will be created at {}", dataloader.getPathToProperties());
@@ -114,9 +114,9 @@ public class InitRun implements Run {
 		return "Y".equalsIgnoreCase(answer);
 	}
 
-	private void createDatabase() throws ClassNotFoundException, SQLException {
-		try(SqLiteDAO sqlite = new SqLiteDAO(dataloader.getPathToDatabase())){
-			sqlite.createTables();
+	private void createDatabase() throws SQLException {
+		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dataloader.getPathToDatabase())){
+			mtgaCollectionDbDAO.createTables();
 		}
 	}
 

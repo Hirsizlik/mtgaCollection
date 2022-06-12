@@ -22,8 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
+import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.database.SetInfoLoader;
-import hirsizlik.mtgacollection.database.SqLiteDAO;
 import hirsizlik.mtgacollection.formatter.AsciiStringHelper;
 import hirsizlik.mtgacollection.formatter.RarityToColor;
 import hirsizlik.mtgacollection.parser.LogfileParser;
@@ -36,7 +36,7 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
 public class AllCardsRun implements Run{
 
 	private final Path toLog;
-	private final SqLiteDAO sqLiteDAO;
+	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -64,15 +64,16 @@ public class AllCardsRun implements Run{
 	 *
 	 * @param p the properties, using "log.path" to read the log file and "colors" to decide if ANSI colors
 	 * should be used.
-	 * @param sqLiteDAO access to the SqLite-Database
+	 * @param mtgaCollectionDbDAO access to the local SqLite-Database
 	 * @param additionalArguments additional Arguments, which can contain filter criteria.
 	 */
-	public AllCardsRun(final Properties p, final SqLiteDAO sqLiteDAO, final List<String> additionalArguments) {
+	public AllCardsRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO,
+			final List<String> additionalArguments) {
 		toLog = Paths.get(p.getProperty("log.path"));
 		color = Boolean.parseBoolean(p.getProperty("colors"));
 		filterMap = new EnumMap<>(Filter.class);
 		Stream.of(Filter.values()).forEach(f -> filterMap.put(f, new ArrayList<>()));
-		this.sqLiteDAO = sqLiteDAO;
+		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
 		this.additionalArguments = additionalArguments;
 	}
 
@@ -90,7 +91,7 @@ public class AllCardsRun implements Run{
 	}
 
 	private void startRun() throws SQLException, IOException {
-		SetInfoLoader setInfoLoader = new SetInfoLoader(sqLiteDAO.getSetMap());
+		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 
 		initFilterMap(setInfoLoader);
 
@@ -109,7 +110,7 @@ public class AllCardsRun implements Run{
 		Function<CardInfoAndAmount, String> ciaaFormatter = createFormatter();
 
 		cardAmountMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-			.map(e -> mapCard(sqLiteDAO, setInfoLoader, e))
+			.map(e -> mapCard(setInfoLoader, e))
 			.filter(filter)
 			.map(ciaaFormatter)
 			.forEach(logger::info);
@@ -156,10 +157,9 @@ public class AllCardsRun implements Run{
 		}
 	}
 
-	private CardInfoAndAmount mapCard(final SqLiteDAO sqliteDAO, final SetInfoLoader sil,
-			final Map.Entry<Integer, Integer> entry) {
+	private CardInfoAndAmount mapCard(final SetInfoLoader sil, final Map.Entry<Integer, Integer> entry) {
 		try {
-			Optional<CardInfo> ci = sqliteDAO.getCard(entry.getKey(), sil);
+			Optional<CardInfo> ci = mtgaCollectionDbDAO.getCard(entry.getKey(), sil);
 			return new CardInfoAndAmount(ci.orElse(CardInfo.newUnknown(entry.getKey(), sil)), entry.getValue());
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);

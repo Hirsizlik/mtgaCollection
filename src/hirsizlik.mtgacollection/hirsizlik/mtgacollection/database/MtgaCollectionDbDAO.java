@@ -20,12 +20,11 @@ import hirsizlik.mtgacollection.bo.SetInfo;
 import hirsizlik.mtgacollection.scryfall.ScryfallSetInfo;
 
 /**
- * Manages the access to the SQLite-Database, which is used to store all known
- * cards and sets.
+ * Manages access to the local database to store all the cards with names and the sets.
  *
  * @author Markus Schagerl
  */
-public class SqLiteDAO implements AutoCloseable{
+public class MtgaCollectionDbDAO implements AutoCloseable{
 
 	private final Connection c;
 
@@ -36,12 +35,15 @@ public class SqLiteDAO implements AutoCloseable{
 	/**
 	 * Constructs a new instance, also opening a connection to the database and preparing some statements.
 	 * @param toDB the path to the database
-	 * @throws ClassNotFoundException thrown by Class.forName, should never be thrown
 	 * @throws SQLException thrown by DriverManager.getConnection (probably database not found)
 	 * and Connection#prepareStatement (some SQL error, should never happen).
 	 */
-	public SqLiteDAO(final Path toDB) throws ClassNotFoundException, SQLException {
-		Class.forName("org.sqlite.JDBC");
+	public MtgaCollectionDbDAO(final Path toDB) throws SQLException {
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("org.sqlite.JDBC could not be loaded", e);
+		}
 		c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString());
 		c.setAutoCommit(false);
 	}
