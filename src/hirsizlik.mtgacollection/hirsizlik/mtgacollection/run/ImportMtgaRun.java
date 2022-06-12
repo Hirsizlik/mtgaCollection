@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -18,15 +17,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import hirsizlik.mtgacollection.bo.CardInfo;
-import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
+import hirsizlik.mtgacollection.database.RawCardDatabaseDAO;
+import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
-import hirsizlik.mtgacollection.jackson.mtga.localisation.Key;
-import hirsizlik.mtgacollection.jackson.mtga.localisation.Localisation;
 import hirsizlik.mtgacollection.mapper.MapMtgaCardToCardInfo;
 import hirsizlik.mtgacollection.mapper.MappingResult;
-import hirsizlik.mtgacollection.parser.MtgaCardLocParser;
-import hirsizlik.mtgacollection.parser.MtgaCardLocParser.MtgaCardLoc;
+import hirsizlik.mtgacollection.parser.MtgaCardParser;
 import hirsizlik.mtgacollection.scryfall.ScryfallDAO;
 import hirsizlik.mtgacollection.scryfall.ScryfallSetInfo;
 import hirsizlik.mtgacollection.scryfall.ScryfallSetQuirk;
@@ -38,8 +35,8 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetQuirk;
  */
 public class ImportMtgaRun implements Run {
 
-	private static final String DATA_LOC = "Data_loc";
-	private static final String DATA_CARDS = "Data_cards";
+	private static final String RAW_CARD_DATABASE = "Raw_CardDatabase";
+	private static final String RAW_CARDS = "Raw_cards";
 	private final Path toMtgaData;
 	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
 	private final ScryfallDAO scryfallDAO = new ScryfallDAO();
@@ -58,7 +55,7 @@ public class ImportMtgaRun implements Run {
 	 * @param mtgaCollectionDbDAO access to the database
 	 */
 	public ImportMtgaRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO) {
-		this.toMtgaData = Paths.get(p.getProperty("mtga.path"), "MTGA_Data/Downloads/Data/");
+		this.toMtgaData = Paths.get(p.getProperty("mtga.path"), "MTGA_Data/Downloads/Raw/");
 		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
 	}
 
@@ -73,30 +70,29 @@ public class ImportMtgaRun implements Run {
 	}
 
 	private void startRun() throws IOException, InterruptedException, SQLException {
-		List<String> fileNames = List.of(DATA_CARDS, DATA_LOC);
+		List<String> fileNames = List.of(RAW_CARDS, RAW_CARD_DATABASE);
 		Map<String, Path> fileMap = getMtgaFilePaths(fileNames);
-		if(fileMap.size() != fileNames.size()) {
+		if (fileMap.size() != fileNames.size()) {
 			throw new IllegalStateException(String.format("Not all necessary files were found (found: %s)", fileMap));
 		}
 
-		MtgaCardLoc cardLoc = MtgaCardLocParser.parse(fileMap.get(DATA_CARDS), fileMap.get(DATA_LOC));
-
 		SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+		try (RawCardDatabaseDAO rawCardDatabase = new RawCardDatabaseDAO(fileMap.get(RAW_CARD_DATABASE))) {
+			List<MtgaCard> cardData = MtgaCardParser.parse(fileMap.get(RAW_CARDS));
+			if (updateSets(cardData, sil)) {
+				// reload if a set was added
+				sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+			}
 
-		if(updateSets(cardLoc.cardList(), sil)) {
-			// reload if a set was added
-			sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+			MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(rawCardDatabase, sil);
+
+			List<CardInfo> cardInfoList = cardData.stream().map(cardMapper)
+					.filter(mr -> mr.returnTrueIfOkOrElse(this::doIfUnmappable))
+					.map(MappingResult::get)
+					.toList();
+
+			addCards(sil, cardInfoList);
 		}
-
-		MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(
-				mapLocalisation(cardLoc.englishLocalization()), sil);
-
-		List<CardInfo> cardInfoList = cardLoc.cardList().stream().map(cardMapper)
-				.filter(mr -> mr.returnTrueIfOkOrElse(this::doIfUnmappable))
-				.map(MappingResult::get)
-				.toList();
-
-		addCards(sil, cardInfoList);
 	}
 
 	private void addCards(final SetInfoLoader sil, final List<CardInfo> cardInfoList) throws SQLException {
@@ -181,11 +177,6 @@ public class ImportMtgaRun implements Run {
 			logger.error("Error while mapping the card: {}; Error: {}", mr.getBase(),
 					mr.getException());
 		}
-	}
-
-	private static Map<Integer, String> mapLocalisation(final Localisation loc){
-		return loc.getKeys().stream().collect(Collectors.toMap(Key::getId,
-				k -> Objects.requireNonNullElse(k.getRaw(), k.getText())));
 	}
 
 	private Map<String, Path> getMtgaFilePaths(final List<String> nameStart) throws IOException{
