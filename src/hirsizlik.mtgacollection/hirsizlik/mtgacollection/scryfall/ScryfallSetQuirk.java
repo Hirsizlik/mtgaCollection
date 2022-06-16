@@ -52,14 +52,20 @@ public final class ScryfallSetQuirk {
 	 * @return the fake set for this code, if needed, otherwise empty
 	 */
 	public static Optional<ScryfallSetInfo> createFakeScryfallSet(final String mtgaCode) {
-		if("ArenaSUP".equals(mtgaCode)) {
+		if ("ArenaSUP".equals(mtgaCode)) {
 			return Optional.of(new ScryfallSetInfo("Arena Supplemental (unused)", "ArenaSUP", ScryfallSetType.FUNNY,
 					LocalDate.of(1970, 1, 1)));
 		}
 
-		if("ANC".equals(mtgaCode)) {
+		if ("ANC".equals(mtgaCode)) {
 			return Optional.of(new ScryfallSetInfo("Arena Mirror Mirror", "ANC", ScryfallSetType.FUNNY,
 					LocalDate.of(2021, 7, 3)));
+		}
+
+		if ("Y22".equals(mtgaCode)) {
+			// Scryfall used YMID, YNEO and YSNC instead
+			return Optional.of(new ScryfallSetInfo("Alchemy 2022", "Y22", ScryfallSetType.ALCHEMY,
+					LocalDate.of(2021, 12, 9)));
 		}
 
 		return Optional.empty();
