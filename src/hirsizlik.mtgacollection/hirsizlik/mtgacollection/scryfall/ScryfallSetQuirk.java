@@ -57,11 +57,6 @@ public final class ScryfallSetQuirk {
 					LocalDate.of(1970, 1, 1)));
 		}
 
-		if ("ANC".equals(mtgaCode)) {
-			return Optional.of(new ScryfallSetInfo("Arena Mirror Mirror", "ANC", ScryfallSetType.FUNNY,
-					LocalDate.of(2021, 7, 3)));
-		}
-
 		if ("Y22".equals(mtgaCode)) {
 			// Scryfall used YMID, YNEO and YSNC instead
 			return Optional.of(new ScryfallSetInfo("Alchemy 2022", "Y22", ScryfallSetType.ALCHEMY,
