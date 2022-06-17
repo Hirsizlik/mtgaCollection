@@ -6,29 +6,58 @@ on:
       - "v*"
 
 jobs:
-  build:
+  create_release:
+    name: Create release
     runs-on: ubuntu-latest
-
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+          
+  build:
+    name: Build
+    needs: create_release
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '18'
           distribution: 'adopt'
-      
       - name: Install rpm-build
         run: |
           sudo apt-get update
           sudo apt-get install rpm
-
-      - name: Run clean install
-        run: mvn clean install -Dskip.rpm=false
+        if: runner.os == 'Linux'
+      - name: Run clean install on Linux
+        run: mvn clean install -Dskip.rpm=false -Dskip.deb=false
+        if: runner.os == 'Linux'
+      - name: Run clean install on Windows
+        run: mvn clean install -D"skip.exe=false"
+        if: runner.os == 'Windows'
       
-      - name: Create Draft Release
-        uses: ncipollo/release-action@v1
+      - name: Upload release assets
+        uses: nanoufo/action-upload-artifacts-and-release-assets@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "target/mtgacollection*.rpm"
-          draft: true
+          path: target/mtgacollection*.???
+          upload-release-files: true
+          release-upload-url: ${{ needs.create_release.outputs.upload_url }}
