@@ -10,8 +10,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>17</java.version>
+		<java.version>18</java.version>
 		<skip.rpm>true</skip.rpm>
+		<skip.deb>true</skip.deb>
+		<skip.exe>true</skip.exe>
 	</properties>
 
 	<dependencies>
@@ -116,6 +118,7 @@
 							</goals>
 							<configuration>
 								<outputDirectory>${project.build.directory}/modules_copy</outputDirectory>
+								<excludeArtifactIds>sqlite-jdbc,log4j-core</excludeArtifactIds>
 							</configuration>
 						</execution>
 					</executions>
@@ -124,7 +127,7 @@
 				<plugin>
 					<groupId>org.moditect</groupId>
 					<artifactId>moditect-maven-plugin</artifactId>
-					<version>1.0.0.RC1</version>
+					<version>1.0.0.RC2</version>
 					<executions>
 						<execution>
 							<id>add-module-info-to-dependencies</id>
@@ -154,7 +157,9 @@
 							</goals>
 							<configuration>
 								<modulePath>
-									<path>${project.build.directory}/jar:${project.build.directory}/modules_generated:${project.build.directory}/modules_copy</path>
+									<path>${project.build.directory}/jar</path>
+									<path>${project.build.directory}/modules_generated</path>
+									<path>${project.build.directory}/modules_copy</path>
 								</modulePath>
 								<modules>
 									<module>hirsizlik.mtgacollection</module>
@@ -170,6 +175,7 @@
 								<noManPages>true</noManPages>
 								<stripDebug>true</stripDebug>
 								<noHeaderFiles>true</noHeaderFiles>
+								<jarInclusionPolicy>NONE</jarInclusionPolicy>
 							</configuration>
 						</execution>
 					</executions>
@@ -190,6 +196,37 @@
 								<executable>bash</executable>
 								<arguments>
 									<argument>${project.basedir}/jpackage-rpm.sh</argument>
+									<argument>${project.version}</argument>
+								</arguments>
+							</configuration>
+						</execution>
+						<execution>
+							<id>Creating a DEB Package via jpackage</id>
+							<phase>package</phase>
+							<goals>
+								<goal>exec</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.deb}</skip>
+								<executable>bash</executable>
+								<arguments>
+									<argument>${project.basedir}/jpackage-deb.sh</argument>
+									<argument>${project.version}</argument>
+								</arguments>
+							</configuration>
+						</execution>
+						<execution>
+							<id>Creating a Windows Executable via jpackage</id>
+							<phase>package</phase>
+							<goals>
+								<goal>exec</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.exe}</skip>
+								<executable>cmd</executable>
+								<arguments>
+									<argument>/C</argument>
+									<argument>${project.basedir}/jpackage-exe.cmd</argument>
 									<argument>${project.version}</argument>
 								</arguments>
 							</configuration>
