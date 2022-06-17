@@ -20,7 +20,6 @@ module hirsizlik.mtgacollection {
     opens hirsizlik.mtgacollection.jackson.playercards to com.fasterxml.jackson.databind;
 	opens hirsizlik.mtgacollection.jackson.inventory to com.fasterxml.jackson.databind;
 	opens hirsizlik.mtgacollection.jackson.mtga.card to com.fasterxml.jackson.databind;
-	opens hirsizlik.mtgacollection.jackson.mtga.localisation to com.fasterxml.jackson.databind;
 	opens hirsizlik.mtgacollection.jackson.scryfall.set to com.fasterxml.jackson.databind;
 
 	exports hirsizlik.mtgacollection.log4j.logger to org.apache.logging.log4j;
