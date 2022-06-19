@@ -29,7 +29,8 @@ public class DataLoaderFactory {
 	private static DataLoader getDataLoaderByOsName(final String osName) {
 		return switch(osName)  {
 			case "Linux" -> new XdgDataLoader();
-			default -> throw new IllegalArgumentException(osName + " is not supported, use -p instead.");
+			default -> throw new IllegalArgumentException(osName + " is not supported, "
+					+ "use \"-p path/to/properties path/to/database\" instead (will be created there if missing).");
 		};
 	}
 }
