@@ -1,5 +1,7 @@
 package hirsizlik.mtgacollection.bo.inventory;
 
+import java.util.List;
+
 /**
  * Class for different currencies currently owned.
  *
@@ -11,17 +13,4 @@ public record Currency(
 		/** amount of gems */
 		int gems,
 		/** amount of (traditional) draft tokens */
-		int draftTokens,
-		/** amount of sealed tokens*/
-		int sealedTokens) {
-
-	/**
-	 * Checks if any tokens (draft + sealed) are currently owned.
-	 *
-	 * @return true if any token is owned, otherwise false
-	 */
-	public boolean hasDraftOrSealedTokens() {
-		return draftTokens > 0 || sealedTokens > 0;
-	}
-
-}
+		List<Token> tokens) {}

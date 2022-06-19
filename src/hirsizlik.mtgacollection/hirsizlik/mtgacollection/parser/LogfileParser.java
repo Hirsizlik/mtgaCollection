@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import hirsizlik.mtgacollection.bo.inventory.Inventory;
 import hirsizlik.mtgacollection.jackson.inventory.PlayerInventory;
-import hirsizlik.mtgacollection.jackson.playercards.PlayerCards;
 import hirsizlik.mtgacollection.mapper.MapMtgaInventoryToInventory;
 
 /**
@@ -21,19 +20,16 @@ import hirsizlik.mtgacollection.mapper.MapMtgaInventoryToInventory;
 public class LogfileParser {
 
 	private final Inventory inventory;
-	private final Map<Integer, Integer> cardMap;
 
-	private static final String GET_PLAYER_INVENTORY = "<== PlayerInventory.GetPlayerInventory";
-	private static final String GET_PLAYER_CARDS = "<== PlayerInventory.GetPlayerCardsV3";
+	private static final String INVENTORY_INFO = "{\"InventoryInfo\":";
 
 	private LogfileParser(final Path pathToLogfile) throws IOException {
 		Map<String, String> jsonBlocks = readJsonBlocks(pathToLogfile);
 
 		ObjectMapper omapper = new ObjectMapper();
-		PlayerInventory pi = omapper.readValue(jsonBlocks.get(GET_PLAYER_INVENTORY), PlayerInventory.class);
+		PlayerInventory pi = omapper.readValue(jsonBlocks.get(INVENTORY_INFO), PlayerInventory.class);
 		// Mapping should always be successful
 		inventory = new MapMtgaInventoryToInventory().apply(pi).get();
-		cardMap = omapper.readValue(jsonBlocks.get(GET_PLAYER_CARDS), PlayerCards.class).getPayload();
 	}
 
 	/**
@@ -50,7 +46,7 @@ public class LogfileParser {
 
 	private static Map<String, String> readJsonBlocks(final Path pathToLogfile) throws IOException {
 		try(LogfileBlockReader r = new LogfileBlockReader(pathToLogfile)){
-			return r.getLastBlockAfter(GET_PLAYER_INVENTORY, GET_PLAYER_CARDS);
+			return r.getLastBlockAfter(INVENTORY_INFO);
 		}
 	}
 
@@ -60,12 +56,4 @@ public class LogfileParser {
 	public Inventory getInventory() {
 		return inventory;
 	}
-
-	/**
-	 * @return the map with cardId as key and the amount of cards (1-4) as value.
-	 */
-	public Map<Integer, Integer> getCardIdAmountMap(){
-		return cardMap;
-	}
-
 }

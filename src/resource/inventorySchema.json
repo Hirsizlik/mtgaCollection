@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/PlayerInventory",
+    "definitions": {
+        "PlayerInventory": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+                "Gems": {
+                    "type": "integer"
+                },
+                "Gold": {
+                    "type": "integer"
+                },
+                "TotalVaultProgress": {
+                    "type": "integer"
+                },
+                "wcTrackPosition": {
+                    "type": "integer"
+                },
+                "WildCardCommons": {
+                    "type": "integer"
+                },
+                "WildCardUnCommons": {
+                    "type": "integer"
+                },
+                "WildCardRares": {
+                    "type": "integer"
+                },
+                "WildCardMythics": {
+                    "type": "integer"
+                },
+                "CustomTokens": {
+                    "$ref": "#/definitions/CustomToken"
+                },
+                "Boosters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Booster"
+                    }
+                }
+            }
+        },
+        "Booster": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "CollationId": {
+                    "type": "integer"
+                },
+                "SetCode": {
+                    "type": "string"
+                },
+                "Count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "CustomToken": {
+            "type": "object",
+            "additionalProperties": true
+        }
+    }
+}

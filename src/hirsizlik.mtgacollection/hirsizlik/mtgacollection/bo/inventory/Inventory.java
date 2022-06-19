@@ -12,20 +12,14 @@ import hirsizlik.mtgacollection.bo.Rarity;
  * @author Markus Schagerl
  */
 public record Inventory(
-		/** The MTGA playerId */
-		String playerId,
 		/** Wildcards and the current trackPosition */
 		Wildcard wildcard,
 		/** All Currencies (gold, gems, tokens)*/
 		Currency currency,
 		/** Current VaultProgress*/
-		double vaultProgress,
+		int vaultProgress,
 		/** All kind of booster you currently have*/
-		List<Booster> boosters,
-		/** All vouchers (currently unimplemented) */
-		List<?> vouchers,
-		/** The vanity stuff (pets, avatar, cardbacks)*/
-		Vanity vanity) {
+		List<Booster> boosters) {
 
 	/**
 	 * returns a formatted string describing this inventory.
@@ -43,7 +37,7 @@ public record Inventory(
 				wildcard.getAmountOf(Rarity.MYTHIC)));
 
 		appendCurrencies(sb);
-		sb.append(String.format("Vault progress: %.1f%%%n", vaultProgress));
+		sb.append(String.format("Vault progress: %.1f%%%n", vaultProgress / 10f));
 
 		if (!boosters.isEmpty()) {
 			sb.append(boosters.stream()
@@ -60,10 +54,11 @@ public record Inventory(
 
 		sb.append(String.format("Currencies: %d gold, %d gems%n",
 				c.gold(), c.gems()));
-		if(c.hasDraftOrSealedTokens()) {
-			sb.append(String.format("Tokens: %d Draft, %d Sealed%n",
-					c.draftTokens(),
-					c.sealedTokens()));
+		if(!c.tokens().isEmpty()) {
+			String tokens = c.tokens().stream()
+					.map(t -> String.format("%s: %d", t.name(), t.count()))
+					.collect(Collectors.joining(",", "Tokens: [", "]%n".formatted()));
+			sb.append(tokens);
 		}
 	}
 

@@ -1,57 +1,77 @@
 
 package hirsizlik.mtgacollection.jackson.inventory;
 
-import java.util.HashMap;
-import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "collationId",
-    "count"
+    "CollationId",
+    "SetCode",
+    "Count"
 })
 public class Booster {
 
-    @JsonProperty("collationId")
+    @JsonProperty("CollationId")
     private Integer collationId;
-    @JsonProperty("count")
+    @JsonProperty("SetCode")
+    private String setCode;
+    @JsonProperty("Count")
     private Integer count;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("collationId")
+    @JsonProperty("CollationId")
     public Integer getCollationId() {
         return collationId;
     }
 
-    @JsonProperty("collationId")
-    public void setCollationId(Integer collationId) {
+    @JsonProperty("CollationId")
+    public void setCollationId(final Integer collationId) {
         this.collationId = collationId;
     }
 
-    @JsonProperty("count")
+    @JsonProperty("SetCode")
+    public String getSetCode() {
+        return setCode;
+    }
+
+    @JsonProperty("SetCode")
+    public void setSetCode(final String setCode) {
+        this.setCode = setCode;
+    }
+
+    @JsonProperty("Count")
     public Integer getCount() {
         return count;
     }
 
-    @JsonProperty("count")
-    public void setCount(Integer count) {
+    @JsonProperty("Count")
+    public void setCount(final Integer count) {
         this.count = count;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Booster.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append("collationId");
+        sb.append('=');
+        sb.append(((this.collationId == null)?"<null>":this.collationId));
+        sb.append(',');
+        sb.append("setCode");
+        sb.append('=');
+        sb.append(((this.setCode == null)?"<null>":this.setCode));
+        sb.append(',');
+        sb.append("count");
+        sb.append('=');
+        sb.append(((this.count == null)?"<null>":this.count));
+        sb.append(',');
+        if (sb.charAt((sb.length()- 1)) == ',') {
+            sb.setCharAt((sb.length()- 1), ']');
+        } else {
+            sb.append(']');
+        }
+        return sb.toString();
     }
 
 }
