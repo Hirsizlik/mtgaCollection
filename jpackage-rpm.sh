@@ -9,4 +9,5 @@ jpackage \
 -d ./target \
 --license-file ./LICENSE \
 --linux-rpm-license-type GPLv3+ \
---verbose 
+--verbose \
+--java-options -Djava.net.preferIPv6Addresses=true

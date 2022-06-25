@@ -8,4 +8,5 @@ jpackage \
 --app-version $1 \
 -d ./target \
 --license-file ./LICENSE \
---verbose 
+--verbose \
+--java-options -Djava.net.preferIPv6Addresses=true

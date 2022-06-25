@@ -8,4 +8,5 @@ jpackage ^
 -d .\target ^
 --license-file .\LICENSE ^
 --win-console ^
---verbose 
+--verbose ^
+--java-options -Djava.net.preferIPv6Addresses=true
