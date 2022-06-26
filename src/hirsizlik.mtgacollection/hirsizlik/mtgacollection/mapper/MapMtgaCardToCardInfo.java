@@ -75,6 +75,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 			return false;
 		}
 
-		return mtgaCard.getCollectorMax() != null && mtgaCard.getDigitalReleaseSet() == null;
+		return mtgaCard.getCollectorMax() != null && (mtgaCard.getDigitalReleaseSet() ==  null ||
+				mtgaCard.getDigitalReleaseSet().startsWith("Y22"));
 	}
 }
