@@ -73,6 +73,7 @@ public class InitRun implements Run {
 		props.setProperty("log.path", pathToLog.toAbsolutePath().toString());
 		props.setProperty("mtga.path", pathToGame.toAbsolutePath().toString());
 		props.setProperty("colors", Boolean.toString(color));
+		props.setProperty("mtga.tracker.daemon.url", "http://localhost:6842"); // daemon-default
 		try (OutputStream os = Files.newOutputStream(dataloader.getPathToProperties()))  {
 			props.store(os, "");
 		}
