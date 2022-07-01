@@ -45,12 +45,27 @@ public interface Statistic{
 	 * @return the name
 	 */
 	String getName();
+
 	/**
-	 * Checks if this statistic has only cards in the standard format.
+	 * Checks if this statistic has only cards in the Standard format.
 	 *
-	 * @return true is the statistic considers only cards currently in standard.
+	 * @return true if the statistic contains only cards currently in Standard.
 	 */
 	boolean isInStandard();
+
+	/**
+	 * Checks if the statistic has only cards in the Standard and the Alchemy formats.
+	 *
+	 * @return true if the statistic contains only cards currently in Alchemy.
+	 */
+	boolean isInAlchemy();
+
+	/**
+	 * Checks if the statistic has only cards in the Pioneer (or Explorer) format.
+	 *
+	 * @return true if the statistic contains only cards currently in Explorer / Pioneer.
+	 */
+	boolean isInPioneer();
 
 	/**
 	 * Calculates the percentage of cards owned of a rarity.
