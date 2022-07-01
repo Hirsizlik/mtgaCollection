@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,11 +24,12 @@ import hirsizlik.mtgacollection.bo.SetStatistic;
 import hirsizlik.mtgacollection.bo.Statistic;
 import hirsizlik.mtgacollection.bo.TotalStatistic;
 import hirsizlik.mtgacollection.bo.inventory.Inventory;
-import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
+import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.formatter.AsciiStatisticFormatter;
 import hirsizlik.mtgacollection.formatter.BasicStatisticFormatter;
 import hirsizlik.mtgacollection.formatter.StatisticFormatter;
+import hirsizlik.mtgacollection.mtgatrackerdaemon.MtgaTrackerDaemonDAO;
 import hirsizlik.mtgacollection.parser.LogfileParser;
 
 /**
@@ -38,11 +39,12 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
  */
 public class DefaultRun implements Run{
 
+	private static final Logger logger = LogManager.getLogger();
+
 	private final Path toLog;
 	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
 	private final boolean colors;
-
-	private static final Logger logger = LogManager.getLogger();
+	private final MtgaTrackerDaemonDAO mtgaTrackerDaemon;
 
 	/**
 	 * Creates the run.
@@ -52,9 +54,10 @@ public class DefaultRun implements Run{
 	 * @param mtgaCollectionDbDAO access to the database
 	 */
 	public DefaultRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO) {
-		toLog = Paths.get(p.getProperty("log.path"));
-		colors = Boolean.parseBoolean(p.getProperty("colors"));
+		this.toLog = Paths.get(p.getProperty("log.path"));
+		this.colors = Boolean.parseBoolean(p.getProperty("colors"));
 		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
+		this.mtgaTrackerDaemon = new MtgaTrackerDaemonDAO(p.getProperty("mtga.tracker.daemon.url"));
 	}
 
 	@Override
@@ -72,10 +75,14 @@ public class DefaultRun implements Run{
 		LogfileParser lfp = LogfileParser.parse(toLog);
 		Inventory inv = lfp.getInventory();
 		logger.info(inv::asFormattedString);
-		var cardAmountMap = lfp.getCardIdAmountMap();
+
+		if (!mtgaTrackerDaemon.isMtgaRunning()) {
+			logger.error("MTG Arena has to be running to load card statistics");
+			return;
+		}
+		Map<Integer, Integer> cardAmountMap = mtgaTrackerDaemon.getCards();
 		Map<SetInfo, List<CardInfo>> cardsBySet = new HashMap<>();
 		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
-
 		cardAmountMap.keySet().forEach(id -> {
 			Optional<CardInfo> oc;
 			try {
@@ -101,14 +108,34 @@ public class DefaultRun implements Run{
 			.forEach(ss -> logger.info(formatter.format(ss)));
 
 		logger.info("---");
-		Map<Boolean, List<Statistic>> statisticsByFormat = setStatistics.stream()
-				.collect(Collectors.partitioningBy(Statistic::isInStandard));
+		printStatisticsByFormat(setStatistics, formatter);
+	}
 
-		TotalStatistic standard = new TotalStatistic("Standard", statisticsByFormat.get(true));
-		TotalStatistic historic = new TotalStatistic("Historic", statisticsByFormat.get(false));
-		logger.info(() -> formatter.format(standard));
-		logger.info(() -> formatter.format(historic));
-		logger.info(() -> formatter.format(new TotalStatistic("Total", setStatistics)));
+	private void printStatisticsByFormat(final List<Statistic> setStatistics, final StatisticFormatter formatter) {
+		List<Statistic> inStandard = new ArrayList<>(10);
+		List<Statistic> inAlchemy = new ArrayList<>(20);
+		List<Statistic> inPioneer = new ArrayList<>(40);
+		List<Statistic> inHistoric = new ArrayList<>(110);
+		for (Statistic s : setStatistics) {
+			if (s.isInStandard()) {
+				inStandard.add(s);
+			}
+			if (s.isInAlchemy()) {
+				inAlchemy.add(s);
+			}
+			if (s.isInPioneer()) {
+				inPioneer.add(s);
+			}
+			inHistoric.add(s);
+		}
+
+		TotalStatistic standard = new TotalStatistic("Standard", inStandard);
+		TotalStatistic alchemy = new TotalStatistic("Alchemy", inAlchemy);
+		TotalStatistic pioneer = new TotalStatistic("Pioneer", inPioneer);
+		TotalStatistic historic = new TotalStatistic("Historic", inHistoric);
+		Stream.of(standard, alchemy, pioneer, historic)
+			.map(formatter::format)
+			.forEach(logger::info);
 	}
 
 	private LocalDate determineStandardStart(final SetInfoLoader setInfoLoader) {

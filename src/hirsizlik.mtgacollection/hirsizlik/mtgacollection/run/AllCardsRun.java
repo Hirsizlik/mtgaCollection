@@ -1,8 +1,6 @@
 package hirsizlik.mtgacollection.run;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -26,7 +24,7 @@ import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.formatter.AsciiStringHelper;
 import hirsizlik.mtgacollection.formatter.RarityToColor;
-import hirsizlik.mtgacollection.parser.LogfileParser;
+import hirsizlik.mtgacollection.mtgatrackerdaemon.MtgaTrackerDaemonDAO;
 
 /**
  * Run which prints all cards currently in possession.
@@ -34,11 +32,6 @@ import hirsizlik.mtgacollection.parser.LogfileParser;
  * @author Markus Schagerl
  */
 public class AllCardsRun implements Run{
-
-	private final Path toLog;
-	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
-
-	private static final Logger logger = LogManager.getLogger();
 
 	/**
 	 * A value for each possible filter containing its implementation as BiPredicate.
@@ -55,9 +48,13 @@ public class AllCardsRun implements Run{
 		BiPredicate<CardInfoAndAmount, String> biPredicate;
 
 	}
+
+	private static final Logger logger = LogManager.getLogger();
 	private final EnumMap<Filter, List<String>> filterMap;
 	private final List<String> additionalArguments;
 	private final boolean color;
+	private final MtgaCollectionDbDAO mtgaCollectionDbDAO;
+	private final MtgaTrackerDaemonDAO mtgaTrackerDaemon;
 
 	/**
 	 * Creates the run.
@@ -69,12 +66,12 @@ public class AllCardsRun implements Run{
 	 */
 	public AllCardsRun(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO,
 			final List<String> additionalArguments) {
-		toLog = Paths.get(p.getProperty("log.path"));
 		color = Boolean.parseBoolean(p.getProperty("colors"));
 		filterMap = new EnumMap<>(Filter.class);
 		Stream.of(Filter.values()).forEach(f -> filterMap.put(f, new ArrayList<>()));
 		this.mtgaCollectionDbDAO = mtgaCollectionDbDAO;
 		this.additionalArguments = additionalArguments;
+		this.mtgaTrackerDaemon = new MtgaTrackerDaemonDAO(p.getProperty("mtga.tracker.daemon.url"));
 	}
 
 	private boolean additionalArgumentsContainsIgnoreCase(final String contained) {
@@ -95,7 +92,7 @@ public class AllCardsRun implements Run{
 
 		initFilterMap(setInfoLoader);
 
-		if(filterMap.values().stream().anyMatch(v -> !v.isEmpty())) {
+		if (filterMap.values().stream().anyMatch(v -> !v.isEmpty())) {
 			logger.info("Filter: ");
 			filterMap.forEach((k, v) -> logger.printf(Level.INFO, "%-6s: %s", k, v));
 			logger.info("---");
@@ -103,9 +100,11 @@ public class AllCardsRun implements Run{
 
 		Predicate<CardInfoAndAmount> filter = createCombinedFilter();
 
-		LogfileParser lfp = LogfileParser.parse(toLog);
-
-		Map<Integer, Integer> cardAmountMap = lfp.getCardIdAmountMap();
+		if (!mtgaTrackerDaemon.isMtgaRunning()) {
+			logger.error("MTG Arena has to be running to load your cards");
+			return;
+		}
+		Map<Integer, Integer> cardAmountMap = mtgaTrackerDaemon.getCards();
 
 		Function<CardInfoAndAmount, String> ciaaFormatter = createFormatter();
 
