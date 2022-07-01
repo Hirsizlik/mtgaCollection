@@ -77,9 +77,23 @@ public class TotalStatistic implements Statistic{
 		return name;
 	}
 
+	private boolean isNotAny(final Predicate<Statistic> p) {
+		return !isAny(p);
+	}
+
 	@Override
 	public boolean isInStandard() {
-		return !isAny(x -> !x.isInStandard());
+		return isNotAny(x -> !x.isInStandard());
+	}
+
+	@Override
+	public boolean isInAlchemy() {
+		return isNotAny(x -> !x.isInAlchemy());
+	}
+
+	@Override
+	public boolean isInPioneer() {
+		return isNotAny(x -> !x.isInPioneer());
 	}
 
 	@Override

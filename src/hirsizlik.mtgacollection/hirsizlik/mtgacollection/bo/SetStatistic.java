@@ -18,13 +18,15 @@ import java.util.stream.Collectors;
  */
 public class SetStatistic implements Statistic {
 
+	private static final LocalDate RELEASE_RETURN_TO_RAVNICA = LocalDate.of(2012, 10, 5);
 	private static final Set<String> ANA_ANB = Set.of("ANA", "ANB");
+	private static final Set<String> ALCHEMY_SETS = Set.of("Y22", "HBG");
+	private static final int MAX_COPIES = 4;
+
 	private final SetInfo set;
 	private final Map<Rarity, AtomicInteger> ownedByRarity;
 	private final int totalOwned;
 	private final LocalDate standardStart;
-
-	private static final int MAX_COPIES = 4;
 
 	/**
 	 * Creates a new object. The data is read and prepared while doing so.
@@ -52,8 +54,10 @@ public class SetStatistic implements Statistic {
 			});
 		});
 
-		totalOwned = ownedByRarity.entrySet().stream().filter(x -> x.getKey() != Rarity.LAND)
-				.mapToInt(x -> x.getValue().get()).sum();
+		totalOwned = ownedByRarity.entrySet().stream()
+				.filter(x -> x.getKey() != Rarity.LAND)
+				.mapToInt(x -> x.getValue().get())
+				.sum();
 
 		this.standardStart = standardStart;
 	}
@@ -75,9 +79,20 @@ public class SetStatistic implements Statistic {
 
 	@Override
 	public boolean isInStandard() {
-		// ANA and ANB are always in (Bo1-) Standard
-		return ANA_ANB.contains(set.code())
-				|| (!set.isSupplemental() && !set.isReleasedBefore(standardStart));
+		return (!set.isSupplemental() && !set.isReleasedBefore(standardStart));
+	}
+
+	@Override
+	public boolean isInAlchemy() {
+		// TODO implement a better check by extending the database
+		boolean isAlchemyOrPremierSet = !set.isSupplemental() || ALCHEMY_SETS.contains(set.code());
+		return ANA_ANB.contains(set.code()) || (!set.isReleasedBefore(standardStart) && isAlchemyOrPremierSet);
+	}
+
+	@Override
+	public boolean isInPioneer() {
+		// doesn't consider remastered sets as those also contain non-Pioneer cards
+		return !set.isSupplemental() && !set.isReleasedBefore(RELEASE_RETURN_TO_RAVNICA);
 	}
 
 	@Override
