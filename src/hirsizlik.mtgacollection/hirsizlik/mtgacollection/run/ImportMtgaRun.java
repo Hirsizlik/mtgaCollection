@@ -76,12 +76,12 @@ public class ImportMtgaRun implements Run {
 			throw new IllegalStateException(String.format("Not all necessary files were found (found: %s)", fileMap));
 		}
 
-		SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+		SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 		try (RawCardDatabaseDAO rawCardDatabase = new RawCardDatabaseDAO(fileMap.get(RAW_CARD_DATABASE))) {
 			List<MtgaCard> cardData = MtgaCardParser.parse(fileMap.get(RAW_CARDS));
 			if (updateSets(cardData, sil)) {
 				// reload if a set was added
-				sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+				sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 			}
 
 			MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(rawCardDatabase, sil);
