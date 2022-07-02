@@ -76,22 +76,31 @@ public class DefaultRun implements Run{
 			logger.error("MTG Arena has to be running to load card statistics");
 			return;
 		}
-		
-		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
+
+		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 		Map<Integer, Integer> cardAmountMap = mtgaTrackerDaemon.getCards();
 		Map<SetInfo, List<CardInfo>> cardsBySet = new HashMap<>();
 		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
-		cardAmountMap.keySet().forEach(id -> {
+
+		for (Integer id : cardAmountMap.keySet()) {
 			Optional<CardInfo> oc;
 			try {
 				oc = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
 			} catch (SQLException e) {
 				throw new IllegalStateException(e);
 			}
-
-			oc.ifPresentOrElse(c -> cardsBySet.get(c.set()).add(c),
-					() -> logger.warn("Unknown card: {}", id));
-		});
+			if (oc.isPresent()) {
+				CardInfo c = oc.get();
+				if (!c.name().startsWith("A-")) { // TODO extend Database to recognize digital only cards
+					cardsBySet.get(c.set()).add(c);
+				} else if (logger.isDebugEnabled()) {
+					// otherwise Alchemy rebalanced cards would count doubled
+					logger.debug("Skip Alchemy rebalanced card {} {}", c.set(), c.name());
+				}
+			} else {
+				logger.warn("Unknown card: {}", id);
+			}
+		}
 
 		LocalDate standardStart = determineStandardStart(setInfoLoader);
 		List<Statistic> setStatistics = setInfoLoader.getAllSets()

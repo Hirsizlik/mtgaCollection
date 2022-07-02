@@ -149,19 +149,34 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	}
 
 	/**
-	 * Loads all sets and returns them as a map.
+	 * Loads all sets and returns them as a map. No cards are excluded for card totals.
 	 * @return all sets as a map, using the setCode as key.
 	 * @throws SQLException a SQL error
 	 */
 	public Map<String, SetInfo> getSetMap() throws SQLException {
+		return getSetMap(false, false);
+	}
+
+	/**
+	 * Loads all sets and returns them as a map.
+	 * @param excludeInBooster exclude cards which aren't in boosters for card totals
+	 * @param excludeRebalanced exclude rebalanced cards for card totals
+	 * @return all sets as a map, using the setCode as key.
+	 * @throws SQLException a SQL error
+	 */
+	public Map<String, SetInfo> getSetMap(final boolean excludeInBooster, final boolean excludeRebalanced)
+			throws SQLException {
+		String inBooster = "and c.inBooster = 'Y'";
+		// TODO extends database for rebalanced cards instead of using the name
+		String rebalanced = "and SUBSTRING(c.name, 1, 2) != 'A-'";
 		String sql = """
 				SELECT s.code, s.name,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'C' and c.setCode = s.code and c.inBooster = 'Y') as common,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'U' and c.setCode = s.code and c.inBooster = 'Y') as uncommon,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'R' and c.setCode = s.code and c.inBooster = 'Y') as rare,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'M' and c.setCode = s.code and c.inBooster = 'Y') as mythic,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'C' and c.setCode = s.code %1$s %2$s) as common,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'U' and c.setCode = s.code %1$s %2$s) as uncommon,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'R' and c.setCode = s.code %1$s %2$s) as rare,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'M' and c.setCode = s.code %1$s %2$s) as mythic,
 				s.releaseDate, s.isSupplemental from SetInfo s
-				""";
+				""".formatted(excludeInBooster ? inBooster : "", excludeRebalanced ? rebalanced : "");
 		try (Statement s = c.createStatement()) {
 			s.execute(sql);
 			ResultSet rs = Objects.requireNonNull(s.getResultSet());
