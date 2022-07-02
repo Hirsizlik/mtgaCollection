@@ -151,7 +151,7 @@ public class AllCardsRun implements Run{
 	static record CardInfoAndAmount(CardInfo cardInfo, int amount){
 		@Override
 		public String toString() {
-			return String.format("%5d - %-30s %-25s - %d",
+			return String.format("%6d - %-35s %-35s - %d",
 					cardInfo.id(), cardInfo.name(), cardInfo.set().name(), amount);
 		}
 	}
