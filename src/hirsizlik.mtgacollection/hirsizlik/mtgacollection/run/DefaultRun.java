@@ -70,16 +70,14 @@ public class DefaultRun implements Run{
 	}
 
 	private void startRun() throws SQLException, IOException{
-		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
-
-		LogfileParser lfp = LogfileParser.parse(toLog);
-		Inventory inv = lfp.getInventory();
-		logger.info(inv::asFormattedString);
+		printInventory();
 
 		if (!mtgaTrackerDaemon.isMtgaRunning()) {
 			logger.error("MTG Arena has to be running to load card statistics");
 			return;
 		}
+		
+		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 		Map<Integer, Integer> cardAmountMap = mtgaTrackerDaemon.getCards();
 		Map<SetInfo, List<CardInfo>> cardsBySet = new HashMap<>();
 		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
@@ -109,6 +107,12 @@ public class DefaultRun implements Run{
 
 		logger.info("---");
 		printStatisticsByFormat(setStatistics, formatter);
+	}
+
+	private void printInventory() throws IOException {
+		LogfileParser lfp = LogfileParser.parse(toLog);
+		Inventory inv = lfp.getInventory();
+		logger.info(inv::asFormattedString);
 	}
 
 	private void printStatisticsByFormat(final List<Statistic> setStatistics, final StatisticFormatter formatter) {
