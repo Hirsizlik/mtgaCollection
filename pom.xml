@@ -227,7 +227,6 @@
 								<arguments>
 									<argument>/C</argument>
 									<argument>${project.basedir}/jpackage-exe.cmd</argument>
-									<argument>${project.version}</argument>
 								</arguments>
 							</configuration>
 						</execution>

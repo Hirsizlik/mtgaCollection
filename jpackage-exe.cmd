@@ -4,7 +4,6 @@ jpackage ^
 --module hirsizlik.mtgacollection/hirsizlik.mtgacollection.main.MTGACollectionMain ^
 -t exe ^
 --description "A CLI program to see stats of your MTG-Arena card collection." ^
---app-version %1 ^
 -d .\target ^
 --license-file .\LICENSE ^
 --win-console ^
