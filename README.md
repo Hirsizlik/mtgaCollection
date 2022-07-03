@@ -1,4 +1,5 @@
 # mtgaCollection
-A CLI program which reads the log file from MTG Arena and prints statistics of your card collection.
+A CLI program which prints statistics of your MTGA inventory and card collection.
 
-Currently doesn't work due to the logfile changes that were done with AFR.
+Uses https://github.com/frcaton/mtga-tracker-daemon to load the card collection from MTG Arena and 
+https://scryfall.com/ to load Magic set information.
