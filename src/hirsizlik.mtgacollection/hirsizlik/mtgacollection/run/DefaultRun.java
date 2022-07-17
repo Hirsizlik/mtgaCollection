@@ -3,7 +3,6 @@ package hirsizlik.mtgacollection.run;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -63,12 +62,12 @@ public class DefaultRun implements Run{
 	public void run() throws RunException {
 		try {
 			startRun();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RunException(e);
 		}
 	}
 
-	private void startRun() throws SQLException, IOException{
+	private void startRun() throws IOException{
 		printInventory();
 
 		if (!mtgaTrackerDaemon.isMtgaRunning()) {
@@ -82,12 +81,7 @@ public class DefaultRun implements Run{
 		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
 
 		for (Integer id : cardAmountMap.keySet()) {
-			CardInfo c;
-			try {
-				c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
-			} catch (SQLException e) {
-				throw new IllegalStateException(e);
-			}
+			CardInfo c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
 			if (!c.name().startsWith("A-")) { // TODO extend Database to recognize digital only cards
 				cardsBySet.get(c.set()).add(c);
 			} else if (logger.isDebugEnabled()) {

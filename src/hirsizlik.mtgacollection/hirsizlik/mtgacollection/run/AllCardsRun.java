@@ -1,7 +1,5 @@
 package hirsizlik.mtgacollection.run;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -81,12 +79,12 @@ public class AllCardsRun implements Run{
 	public void run() throws RunException {
 		try {
 			startRun();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new RunException(e);
 		}
 	}
 
-	private void startRun() throws SQLException, IOException {
+	private void startRun() {
 		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap());
 
 		initFilterMap(setInfoLoader);
@@ -156,12 +154,8 @@ public class AllCardsRun implements Run{
 	}
 
 	private CardInfoAndAmount mapCard(final SetInfoLoader sil, final Map.Entry<Integer, Integer> entry) {
-		try {
-			CardInfo ci = mtgaCollectionDbDAO.getCard(entry.getKey(), sil);
-			return new CardInfoAndAmount(ci, entry.getValue());
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
-		}
+		CardInfo ci = mtgaCollectionDbDAO.getCard(entry.getKey(), sil);
+		return new CardInfoAndAmount(ci, entry.getValue());
 	}
 
 	@Override

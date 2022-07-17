@@ -3,7 +3,6 @@ package hirsizlik.mtgacollection.main;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -46,9 +45,9 @@ public class MTGACollectionMain {
 
 	}
 
-	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException, SQLException {
+	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException {
 		new InitPropertiesRun(dl).run();
-		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
+		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
 			// then import all cards and sets as normal
 			new ImportMtgaRun(loadProperties(dl), mtgaCollectionDbDAO).run();
 		}

@@ -34,25 +34,24 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	/**
 	 * Constructs a new instance, also opening a connection to the database and preparing some statements.
 	 * @param toDB the path to the database
-	 * @throws SQLException thrown by DriverManager.getConnection (probably database not found)
-	 * and Connection#prepareStatement (some SQL error, should never happen).
+	 * @throws IllegalStateException wrapped ClassNotFoundException or SQLException, neither should ever happen
 	 */
-	public MtgaCollectionDbDAO(final Path toDB) throws SQLException {
+	public MtgaCollectionDbDAO(final Path toDB) {
 		try {
 			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("org.sqlite.JDBC could not be loaded", e);
+			c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString());
+			c.setAutoCommit(false);
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new IllegalStateException(e);
 		}
-		c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString());
-		c.setAutoCommit(false);
 	}
 
 	/**
 	 * Creates the setInfo and the cardInfo tables. Should only be used for new databases.
 	 * The unknown set is added to the created setInfo table
-	 * @throws SQLException SQL error (should never happen)
+	 * @throws IllegalStateException SQL error (should never happen)
 	 */
-	public void createTables() throws SQLException {
+	public void createTables() {
 		String setInfoSql = """
 				CREATE TABLE "setInfo" (
 				"code"            TEXT PRIMARY KEY NOT NULL,
@@ -74,12 +73,14 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 				INSERT INTO setInfo (code, name, releaseDate, isSupplemental)
 				VALUES ("?", "Unknown", "1970-01-01", "N")
 				""";
-		try(Statement statement = c.createStatement()){
+		try (Statement statement = c.createStatement()) {
 			statement.execute(setInfoSql);
 			statement.execute(cardInfoSql);
 			statement.execute(addUnknownSet);
+			c.commit();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
 		}
-		c.commit();
 	}
 
 	/**
@@ -87,28 +88,37 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	 * Actually adding the card is delayed until {@link #executeBatchedCards()} is called.
 	 * @param cardInfo the card to be added
 	 * @return true if a card was added, otherwise false
-	 * @throws SQLException a SQL error
+	 * @throws IllegalStateException a SQL error
 	 */
-	public void addCardBatched(final CardInfo cardInfo) throws SQLException {
-		if(psInsertNewInfo == null) {
-			psInsertNewInfo = c.prepareStatement("INSERT INTO cardInfo (id, name, rarity, setCode, inBooster) VALUES " +
-					"(?, ?, ?, ?, ?)");
+	public void addCardBatched(final CardInfo cardInfo) {
+		try {
+			if (psInsertNewInfo == null) {
+				psInsertNewInfo = c.prepareStatement(
+						"INSERT INTO cardInfo (id, name, rarity, setCode, inBooster) VALUES " +
+						"(?, ?, ?, ?, ?)");
+			}
+			psInsertNewInfo.setLong(1, cardInfo.id()); // index starts with 1, not 0
+			psInsertNewInfo.setString(2, cardInfo.name());
+			psInsertNewInfo.setString(3, cardInfo.rarity().getDbCode());
+			psInsertNewInfo.setString(4, cardInfo.set().code());
+			psInsertNewInfo.setString(5, cardInfo.inBooster() ? "Y" : "N");
+			psInsertNewInfo.addBatch();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
 		}
-		psInsertNewInfo.setLong(1, cardInfo.id()); // index starts with 1, not 0
-		psInsertNewInfo.setString(2, cardInfo.name());
-		psInsertNewInfo.setString(3, cardInfo.rarity().getDbCode());
-		psInsertNewInfo.setString(4, cardInfo.set().code());
-		psInsertNewInfo.setString(5, cardInfo.inBooster() ? "Y" : "N");
-		psInsertNewInfo.addBatch();
 	}
 
 	/**
-	 * Executes the inserts from {@link #addCardIfNewBatched(CardInfo)}
-	 * @throws SQLException
+	 * Executes the inserts from {@link #addCardBatched(CardInfo)}
+	 * @throws IllegalStateException SQL error
 	 */
-	public void executeBatchedCards() throws SQLException {
-		psInsertNewInfo.executeBatch();
-		c.commit();
+	public void executeBatchedCards() {
+		try {
+			psInsertNewInfo.executeBatch();
+			c.commit();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
@@ -116,25 +126,30 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	 * @param id the id of the card
 	 * @param setInfoLoader to load the corresponding set of the card
 	 * @return the card
-	 * @throws SQLException a SQL error
+	 * @throws IllegalStateException a SQL error
 	 * @throws NullPointerException if no card was found
 	 */
-	public CardInfo getCard(final int id, final SetInfoLoader setInfoLoader) throws SQLException {
-		if(psGetCardInfo == null) {
-			psGetCardInfo = c.prepareStatement("SELECT c.id, c.name, c.rarity, c.setCode, c.inBooster "
-					+ "FROM CardInfo c WHERE c.id = ?");
-		}
-		psGetCardInfo.setLong(1, id);
-		psGetCardInfo.execute();
-		ResultSet rs = psGetCardInfo.getResultSet();
-		if(rs == null || !rs.next())
-			throw new NullPointerException("No card with id %d found".formatted(id));
+	public CardInfo getCard(final int id, final SetInfoLoader setInfoLoader) {
+		try {
+			if (psGetCardInfo == null) {
+				psGetCardInfo = c.prepareStatement("SELECT c.id, c.name, c.rarity, c.setCode, c.inBooster "
+						+ "FROM CardInfo c WHERE c.id = ?");
+			}
+			psGetCardInfo.setLong(1, id);
+			psGetCardInfo.execute();
+			ResultSet rs = psGetCardInfo.getResultSet();
+			if (rs == null || !rs.next())
+				throw new NullPointerException("No card with id %d found".formatted(id));
 
-		return new CardInfo(rs.getInt(1),
-				rs.getString(2),
-				Rarity.valueByCode(rs.getString(3)),
-				setInfoLoader.getByCode(rs.getString(4)),
-				rs.getString(5).equals("Y"));// should always be "Y" or "N"
+			return new CardInfo(rs.getInt(1),
+					rs.getString(2),
+					Rarity.valueByCode(rs.getString(3)),
+					setInfoLoader.getByCode(rs.getString(4)),
+					rs.getString(5).equals("Y"));// should always be "Y" or "N"
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
+
 	}
 
 	/**
@@ -142,7 +157,7 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	 * @return all sets as a map, using the setCode as key.
 	 * @throws SQLException a SQL error
 	 */
-	public Map<String, SetInfo> getSetMap() throws SQLException {
+	public Map<String, SetInfo> getSetMap() {
 		return getSetMap(false, false);
 	}
 
@@ -151,10 +166,9 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	 * @param excludeInBooster exclude cards which aren't in boosters for card totals
 	 * @param excludeRebalanced exclude rebalanced cards for card totals
 	 * @return all sets as a map, using the setCode as key.
-	 * @throws SQLException a SQL error
+	 * @throws IllegalStateException a SQL error
 	 */
-	public Map<String, SetInfo> getSetMap(final boolean excludeInBooster, final boolean excludeRebalanced)
-			throws SQLException {
+	public Map<String, SetInfo> getSetMap(final boolean excludeInBooster, final boolean excludeRebalanced) {
 		String inBooster = "and c.inBooster = 'Y'";
 		// TODO extends database for rebalanced cards instead of using the name
 		String rebalanced = "and SUBSTRING(c.name, 1, 2) != 'A-'";
@@ -179,45 +193,60 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 			}
 
 			return setInfoMap;
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
 		}
 	}
 
 	/**
 	 * Adds a new set to the database using the data provided by Scryfall to a batch.
 	 * @param setInfo the Scryfall set data used
-	 * @throws SQLException a SQL error
+	 * @throws IllegalStateException a SQL error
 	 * @see #executeBatchedSets()
 	 */
-	public void addSetFromScryfallBatch(final ScryfallSetInfo setInfo) throws SQLException {
-		if(psInsertNewSet == null) {
-			psInsertNewSet = c.prepareStatement("""
-					INSERT INTO setInfo (code, name, releaseDate, isSupplemental)
-					VALUES (?, ?, ?, ?)
-					""");
-		}
-		psInsertNewSet.setString(1, setInfo.code());
-		psInsertNewSet.setString(2, setInfo.name());
-		psInsertNewSet.setString(3, setInfo.releasedAt().toString());
-		psInsertNewSet.setString(4, setInfo.type().isSupplemental() ? "Y" : "N");
+	public void addSetFromScryfallBatch(final ScryfallSetInfo setInfo) {
+		try {
+			if (psInsertNewSet == null) {
+				psInsertNewSet = c.prepareStatement("""
+						INSERT INTO setInfo (code, name, releaseDate, isSupplemental)
+						VALUES (?, ?, ?, ?)
+						""");
+			}
+			psInsertNewSet.setString(1, setInfo.code());
+			psInsertNewSet.setString(2, setInfo.name());
+			psInsertNewSet.setString(3, setInfo.releasedAt().toString());
+			psInsertNewSet.setString(4, setInfo.type().isSupplemental() ? "Y" : "N");
 
-		psInsertNewSet.addBatch();
+			psInsertNewSet.addBatch();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
 	 * Executes the inserts from {@link #addSetFromScryfallBatch(ScryfallSetInfo)}, then commits.
-	 * @throws SQLException
+	 * @throws IllegalStateException a SQL error
 	 */
-	public void executeBatchedSets() throws SQLException {
-		psInsertNewSet.executeBatch();
-		c.commit();
+	public void executeBatchedSets() {
+		try {
+			psInsertNewSet.executeBatch();
+			c.commit();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
 	 * Closes the database connection.
 	 * @see Connection#close()
+	 * @throws IllegalStateException SQL error on closing
 	 */
 	@Override
-	public void close() throws SQLException {
-		c.close();
+	public void close() {
+		try {
+			c.close();
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }
