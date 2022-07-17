@@ -48,7 +48,6 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 
 	/**
 	 * Creates the setInfo and the cardInfo tables. Should only be used for new databases.
-	 * The unknown set is added to the created setInfo table
 	 * @throws IllegalStateException SQL error (should never happen)
 	 */
 	public void createTables() {
@@ -58,25 +57,20 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 				"name"            TEXT NOT NULL,
 				"releaseDate"     TEXT NOT NULL CHECK(length(releaseDate)=10 and substr(releaseDate, 5, 1) = '-'
 				    and substr(releaseDate, 8, 1) = '-'),
-				"isSupplemental"  TEXT CHECK (isSupplemental in ('Y', 'N')) not null default 'N'
+				"isSupplemental"  TEXT CHECK (isSupplemental in ('Y', 'N')) not null
 				)
 				""";
 		String cardInfoSql = """
 				CREATE TABLE "cardInfo" (
 				"id"         INTEGER PRIMARY KEY NOT NULL,
-				"name"       TEXT NOT NULL DEFAULT 'Unknown',
-				"rarity"     TEXT CHECK( rarity IN ('?', 'L', 'C', 'U', 'R', 'M') ) NOT NULL DEFAULT '?',
-				"setCode"    TEXT NOT NULL DEFAULT '?',
-				"inBooster"  TEXT CHECK (inBooster IN ('Y', 'N') ) NOT NULL DEFAULT 'Y')
-				""";
-		String addUnknownSet = """
-				INSERT INTO setInfo (code, name, releaseDate, isSupplemental)
-				VALUES ("?", "Unknown", "1970-01-01", "N")
+				"name"       TEXT NOT NULL,
+				"rarity"     TEXT CHECK( rarity IN ('L', 'C', 'U', 'R', 'M') ) NOT NULL,
+				"setCode"    TEXT NOT NULL,
+				"inBooster"  TEXT CHECK (inBooster IN ('Y', 'N') ) NOT NULL)
 				""";
 		try (Statement statement = c.createStatement()) {
 			statement.execute(setInfoSql);
 			statement.execute(cardInfoSql);
-			statement.execute(addUnknownSet);
 			c.commit();
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);

@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * Information about card rarities.
  *
@@ -15,8 +12,6 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public enum Rarity {
-	/** Unknown Rarity, used if a unexpected value is found.*/
-	UNKNOWN("unknown", "?", 0),
 	/** Rarity used for basic lands*/
 	LAND("land", "L", 1),
 	/** Common rarity (black set symbol)*/
@@ -28,14 +23,12 @@ public enum Rarity {
 	/** Mythic rare rarity (red set symbol) */
 	MYTHIC("mythic", "M", 5);
 
-	private static final String UNKNOWN_RARITY_LOG = "Unknown Rarity: {}";
 	private final String name;
 	private final String dbCode;
 	private final int mtgaCode;
 
 	private static final List<Rarity> COMMON_TO_MYTHIC_LIST =
 			List.of(Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.MYTHIC);
-	private static final Logger logger = LogManager.getLogger();
 
 	private Rarity(final String name, final String dbCode, final int mtgaCode){
 		this.name = name;
@@ -68,7 +61,8 @@ public enum Rarity {
 	 * Gets the value with the given database code.
 	 *
 	 * @param code the database code
-	 * @return the Rarity with that code, or UNKNOWN if there is no such value
+	 * @return the Rarity with that code
+	 * @throws IllegalArgumentException if no Rarity for that code was found
 	 */
 	public static Rarity valueByCode(final String code) {
 		return firstValueByFilter(x -> x.dbCode.equals(code), code);
@@ -78,7 +72,8 @@ public enum Rarity {
 	 * Gets the value with the given code used by MTGA.
 	 *
 	 * @param code the MTGA code
-	 * @return the Rarity with that code, or UNKNOWN if there is no such value
+	 * @return the Rarity with that code
+	 * @throws IllegalArgumentException if no Rarity for that code was found
 	 */
 	public static Rarity valueByMtgaCode(final int code) {
 		return firstValueByFilter(x -> x.mtgaCode == code, code);
@@ -89,9 +84,6 @@ public enum Rarity {
 				.stream()
 				.filter(filter)
 				.findFirst()
-				.orElseGet(() -> {
-					logger.warn(UNKNOWN_RARITY_LOG, valueForLogging);
-					return UNKNOWN;
-				});
+				.orElseThrow(() -> new IllegalArgumentException("no such rarity found with " + valueForLogging));
 	}
 }
