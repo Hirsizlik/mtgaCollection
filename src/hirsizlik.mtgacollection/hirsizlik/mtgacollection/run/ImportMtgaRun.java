@@ -94,28 +94,20 @@ public class ImportMtgaRun implements Run {
 		}
 	}
 
-	private void addCards(final List<CardInfo> cardInfoList) throws SQLException {
+	private void addCards(final List<CardInfo> cardInfoList) {
 		int count = 0;
 		final int batchSize = 500;
 		for(CardInfo c : cardInfoList) {
-			addCard(c);
+			mtgaCollectionDbDAO.addCardBatched(c);
+			logger.info("Added: {}", c);
 			count++;
-			if(count == batchSize)  {
+			if (count == batchSize) {
 				count = 0;
 				mtgaCollectionDbDAO.executeBatchedCards();
 			}
 		}
-		if(count > 0) {
+		if (count > 0) {
 			mtgaCollectionDbDAO.executeBatchedCards();
-		}
-	}
-
-	private void addCard(final CardInfo c) {
-		try {
-			mtgaCollectionDbDAO.addCardBatched(c);
-			logger.info("Added: {}", c);
-		} catch (SQLException e) {
-			throw new IllegalStateException("SQL-Error while adding " + c, e);
 		}
 	}
 
