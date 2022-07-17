@@ -7,7 +7,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -158,8 +157,8 @@ public class AllCardsRun implements Run{
 
 	private CardInfoAndAmount mapCard(final SetInfoLoader sil, final Map.Entry<Integer, Integer> entry) {
 		try {
-			Optional<CardInfo> ci = mtgaCollectionDbDAO.getCard(entry.getKey(), sil);
-			return new CardInfoAndAmount(ci.orElse(CardInfo.newUnknown(entry.getKey(), sil)), entry.getValue());
+			CardInfo ci = mtgaCollectionDbDAO.getCard(entry.getKey(), sil);
+			return new CardInfoAndAmount(ci, entry.getValue());
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
 		}
