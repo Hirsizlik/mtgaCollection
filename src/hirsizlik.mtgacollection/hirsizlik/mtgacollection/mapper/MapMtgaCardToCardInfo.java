@@ -21,7 +21,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 	 * Creates the Mapper.
 	 *
 	 * @param rawCardDatabaseDAO access to the Localization database.
-	 * @param setInfoLoader to load the set for a card. Unknown sets produce a error.
+	 * @param setInfoLoader to load the set for a card.
 	 */
 	public MapMtgaCardToCardInfo(final RawCardDatabaseDAO rawCardDatabaseDAO, final SetInfoLoader setInfoLoader) {
 		this.rawCardDatabaseDAO = rawCardDatabaseDAO;
@@ -30,16 +30,18 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 
 	@Override
 	public MappingResult<MtgaCard, CardInfo> apply(final MtgaCard mtgaCard) {
-		if(Boolean.TRUE.equals(mtgaCard.getIsToken())) {
+		if (Boolean.TRUE.equals(mtgaCard.getIsToken())) {
 			return MappingResult.createError(mtgaCard, "Card is a token", false);
 		}
 
-		if(Boolean.TRUE.equals(mtgaCard.getIsSecondaryCard())) {
+		if (Boolean.TRUE.equals(mtgaCard.getIsSecondaryCard())) {
 			return MappingResult.createError(mtgaCard, "Card is secondary (e.g. half of a split card)", false);
 		}
 
-		SetInfo setInfo = sil.getByCode(mtgaCard.getSet());
-		if(setInfo == sil.getUnknownSet()) {
+		SetInfo setInfo;
+		try {
+			setInfo = sil.getByCode(mtgaCard.getSet());
+		} catch (NullPointerException e) {
 			return MappingResult.createError(mtgaCard, "Unknown set: " + mtgaCard.getSet());
 		}
 
@@ -62,12 +64,12 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 	}
 
 	private boolean checkInBooster(final MtgaCard mtgaCard) {
-		if(mtgaCard.getGrpId() == 48499) {
+		if (mtgaCard.getGrpId() == 48499) {
 			// 48499 Hanna, Ship's Navigator should be inBooster = N,
 			// but would be Y as it has no "DigitalReleaseSet", other similar Brawl cards have it set
 			return false;
 		}
-		if("ANB".equals(mtgaCard.getSet())) {
+		if ("ANB".equals(mtgaCard.getSet())) {
 			// ANB has a collectorMax set although there is no ANB pack
 			// (?booster finds them in Arena)
 			return false;
