@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,7 +68,7 @@ public class ImportMtgaRun implements Run {
 		}
 	}
 
-	private void startRun() throws IOException, InterruptedException, SQLException {
+	private void startRun() throws IOException, InterruptedException {
 		mtgaCollectionDbDAO.createTables();// errors if it already exists
 
 		List<String> fileNames = List.of(RAW_CARDS, RAW_CARD_DATABASE);
@@ -117,8 +116,7 @@ public class ImportMtgaRun implements Run {
 	 * @return true if Sets were added, otherwise false
 	 * @throws IllegalStateException if a set could not be added
 	 */
-	private void addSets(final List<MtgaCard> allCards)
-			throws IOException, InterruptedException, SQLException {
+	private void addSets(final List<MtgaCard> allCards) throws IOException, InterruptedException {
 		Set<String> allSets = allCards.stream()
 				.map(MtgaCard::getSet)
 				.collect(Collectors.toSet());
