@@ -15,7 +15,7 @@ import hirsizlik.mtgacollection.properties.DataLoaderFactory;
 import hirsizlik.mtgacollection.run.AllCardsRun;
 import hirsizlik.mtgacollection.run.DefaultRun;
 import hirsizlik.mtgacollection.run.ImportMtgaRun;
-import hirsizlik.mtgacollection.run.InitRun;
+import hirsizlik.mtgacollection.run.InitPropertiesRun;
 import hirsizlik.mtgacollection.run.PrintHelpRun;
 import hirsizlik.mtgacollection.run.Run;
 import hirsizlik.mtgacollection.run.RunException;
@@ -47,7 +47,7 @@ public class MTGACollectionMain {
 	}
 
 	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException, SQLException {
-		new InitRun(dl).run();
+		new InitPropertiesRun(dl).run();
 		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
 			// then import all cards and sets as normal
 			new ImportMtgaRun(loadProperties(dl), mtgaCollectionDbDAO).run();
