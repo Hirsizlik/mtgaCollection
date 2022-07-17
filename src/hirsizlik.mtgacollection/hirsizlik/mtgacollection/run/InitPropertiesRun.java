@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Scanner;
@@ -17,11 +16,11 @@ import org.apache.logging.log4j.Logger;
 import hirsizlik.mtgacollection.properties.DataLoader;
 
 /**
- * Run to initiate the database and the properties.
+ * Run to initiate the properties.
  *
  * @author Markus Schagerl
  */
-public class InitRun implements Run {
+public class InitPropertiesRun implements Run {
 
 	private final DataLoader dataloader;
 	private static final Logger LOG = LogManager.getLogger();
@@ -31,7 +30,7 @@ public class InitRun implements Run {
 		FILE, DIRECTORY;
 	}
 
-	public InitRun(final DataLoader dataLoader) {
+	public InitPropertiesRun(final DataLoader dataLoader) {
 		this.dataloader = dataLoader;
 	}
 
@@ -39,14 +38,14 @@ public class InitRun implements Run {
 	public void run() throws RunException {
 		try {
 			runInternal();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RunException(e);
 		}
 	}
 
-	private void runInternal() throws IOException, SQLException {
+	private void runInternal() throws IOException {
 		// check properties
-		if(!Files.exists(dataloader.getPathToProperties())) {
+		if (!Files.exists(dataloader.getPathToProperties())) {
 			LOG.warn("Properties file is missing and will be created at {}", dataloader.getPathToProperties());
 			createPropertiesFile();
 		}
@@ -68,7 +67,7 @@ public class InitRun implements Run {
 		props.setProperty("mtga.path", pathToGame.toAbsolutePath().toString());
 		props.setProperty("colors", Boolean.toString(color));
 		props.setProperty("mtga.tracker.daemon.url", "http://localhost:6842"); // daemon-default
-		try (OutputStream os = Files.newOutputStream(dataloader.getPathToProperties()))  {
+		try (OutputStream os = Files.newOutputStream(dataloader.getPathToProperties())) {
 			props.store(os, "");
 		}
 	}
