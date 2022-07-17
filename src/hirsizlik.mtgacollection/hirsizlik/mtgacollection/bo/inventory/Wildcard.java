@@ -20,7 +20,7 @@ public record Wildcard(
 		int trackPosition) {
 
 	public Wildcard {
-		if(trackPosition < 0 || trackPosition > 29) {
+		if (trackPosition < 0 || trackPosition > 29) {
 			throw new IllegalArgumentException("TrackPosition must be a value from 0-29.");
 		}
 	}
@@ -29,7 +29,7 @@ public record Wildcard(
 	 * Returns the amount of cards of a certain rarity.
 	 *
 	 * @param rarity the rarity to check
-	 * @return the amount of wildcards of that rarity, or 0 if the rarity has no respective wildcard (UNKNOWN and LAND)
+	 * @return the amount of wildcards of that rarity, or 0 if the rarity has no respective wildcard
 	 */
 	public int getAmountOf(final Rarity rarity) {
 		return switch (rarity) {
