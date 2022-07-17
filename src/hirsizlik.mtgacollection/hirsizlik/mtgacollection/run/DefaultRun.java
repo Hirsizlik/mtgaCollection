@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -83,22 +82,17 @@ public class DefaultRun implements Run{
 		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
 
 		for (Integer id : cardAmountMap.keySet()) {
-			Optional<CardInfo> oc;
+			CardInfo c;
 			try {
-				oc = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
+				c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
 			} catch (SQLException e) {
 				throw new IllegalStateException(e);
 			}
-			if (oc.isPresent()) {
-				CardInfo c = oc.get();
-				if (!c.name().startsWith("A-")) { // TODO extend Database to recognize digital only cards
-					cardsBySet.get(c.set()).add(c);
-				} else if (logger.isDebugEnabled()) {
-					// otherwise Alchemy rebalanced cards would count doubled
-					logger.debug("Skip Alchemy rebalanced card {} {}", c.set(), c.name());
-				}
-			} else {
-				logger.warn("Unknown card: {}", id);
+			if (!c.name().startsWith("A-")) { // TODO extend Database to recognize digital only cards
+				cardsBySet.get(c.set()).add(c);
+			} else if (logger.isDebugEnabled()) {
+				// otherwise Alchemy rebalanced cards would count doubled
+				logger.debug("Skip Alchemy rebalanced card {} {}", c.set(), c.name());
 			}
 		}
 

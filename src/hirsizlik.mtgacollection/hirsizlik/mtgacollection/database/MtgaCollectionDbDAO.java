@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import hirsizlik.mtgacollection.bo.CardAmount;
 import hirsizlik.mtgacollection.bo.CardInfo;
@@ -83,35 +82,24 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 		c.commit();
 	}
 
-	private void addCardToBatch(final CardInfo card) throws SQLException {
+	/**
+	 * Adds a new card to the database.
+	 * Actually adding the card is delayed until {@link #executeBatchedCards()} is called.
+	 * @param cardInfo the card to be added
+	 * @return true if a card was added, otherwise false
+	 * @throws SQLException a SQL error
+	 */
+	public void addCardBatched(final CardInfo cardInfo) throws SQLException {
 		if(psInsertNewInfo == null) {
 			psInsertNewInfo = c.prepareStatement("INSERT INTO cardInfo (id, name, rarity, setCode, inBooster) VALUES " +
 					"(?, ?, ?, ?, ?)");
 		}
-		psInsertNewInfo.setLong(1, card.id()); // index starts with 1, not 0
-		psInsertNewInfo.setString(2, card.name());
-		psInsertNewInfo.setString(3, card.rarity().getDbCode());
-		psInsertNewInfo.setString(4, card.set().code());
-		psInsertNewInfo.setString(5, card.inBooster() ? "Y" : "N");
+		psInsertNewInfo.setLong(1, cardInfo.id()); // index starts with 1, not 0
+		psInsertNewInfo.setString(2, cardInfo.name());
+		psInsertNewInfo.setString(3, cardInfo.rarity().getDbCode());
+		psInsertNewInfo.setString(4, cardInfo.set().code());
+		psInsertNewInfo.setString(5, cardInfo.inBooster() ? "Y" : "N");
 		psInsertNewInfo.addBatch();
-	}
-
-	/**
-	 * Adds a new card to the database if no card with the same id is found.
-	 * Actually adding the card is delayed until {@link #executeBatchedCards()} is called.
-	 * @param cardInfo the card to be added
-	 * @param setInfoLoader needed for the set of the card
-	 * @return true if a card was added, otherwise false
-	 * @throws SQLException a SQL error
-	 */
-	public boolean addCardIfNewBatched(final CardInfo cardInfo, final SetInfoLoader setInfoLoader) throws SQLException {
-		Optional<CardInfo> ocFromDb = getCard(cardInfo.id(), setInfoLoader);
-		if(ocFromDb.isEmpty()) {
-			addCardToBatch(cardInfo);
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -127,10 +115,11 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	 * Loads a card from the database
 	 * @param id the id of the card
 	 * @param setInfoLoader to load the corresponding set of the card
-	 * @return the card packed in a Optional, empty if no card was found
+	 * @return the card
 	 * @throws SQLException a SQL error
+	 * @throws NullPointerException if no card was found
 	 */
-	public Optional<CardInfo> getCard(final int id, final SetInfoLoader setInfoLoader) throws SQLException {
+	public CardInfo getCard(final int id, final SetInfoLoader setInfoLoader) throws SQLException {
 		if(psGetCardInfo == null) {
 			psGetCardInfo = c.prepareStatement("SELECT c.id, c.name, c.rarity, c.setCode, c.inBooster "
 					+ "FROM CardInfo c WHERE c.id = ?");
@@ -139,13 +128,13 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 		psGetCardInfo.execute();
 		ResultSet rs = psGetCardInfo.getResultSet();
 		if(rs == null || !rs.next())
-			return Optional.empty();
+			throw new NullPointerException("No card with id %d found".formatted(id));
 
-		return Optional.of(new CardInfo(rs.getInt(1),
+		return new CardInfo(rs.getInt(1),
 				rs.getString(2),
 				Rarity.valueByCode(rs.getString(3)),
 				setInfoLoader.getByCode(rs.getString(4)),
-				rs.getString(5).equals("Y")));// should always be "Y" or "N"
+				rs.getString(5).equals("Y"));// should always be "Y" or "N"
 	}
 
 	/**
