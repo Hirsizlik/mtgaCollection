@@ -1,7 +1,5 @@
 package hirsizlik.mtgacollection.mapper;
 
-import java.sql.SQLException;
-
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
 import hirsizlik.mtgacollection.bo.SetInfo;
@@ -48,7 +46,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 		String name;
 		try {
 			name = rawCardDatabaseDAO.getEnglishNonFormattedLocalization(mtgaCard.getTitleId());
-		} catch (SQLException e) {
+		} catch (IllegalStateException e) {
 			return MappingResult.createError(mtgaCard, "Card name could not be found");
 		}
 
