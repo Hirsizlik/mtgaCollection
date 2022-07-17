@@ -70,20 +70,19 @@ public class ImportMtgaRun implements Run {
 	}
 
 	private void startRun() throws IOException, InterruptedException, SQLException {
+		mtgaCollectionDbDAO.createTables();// errors if it already exists
+
 		List<String> fileNames = List.of(RAW_CARDS, RAW_CARD_DATABASE);
 		Map<String, Path> fileMap = getMtgaFilePaths(fileNames);
 		if (fileMap.size() != fileNames.size()) {
 			throw new IllegalStateException(String.format("Not all necessary files were found (found: %s)", fileMap));
 		}
 
-		SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 		try (RawCardDatabaseDAO rawCardDatabase = new RawCardDatabaseDAO(fileMap.get(RAW_CARD_DATABASE))) {
 			List<MtgaCard> cardData = MtgaCardParser.parse(fileMap.get(RAW_CARDS));
-			if (updateSets(cardData, sil)) {
-				// reload if a set was added
-				sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
-			}
+			addSets(cardData);
 
+			SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 			MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(rawCardDatabase, sil);
 
 			List<CardInfo> cardInfoList = cardData.stream().map(cardMapper)
@@ -91,17 +90,16 @@ public class ImportMtgaRun implements Run {
 					.map(MappingResult::get)
 					.toList();
 
-			addCards(sil, cardInfoList);
+			addCards(cardInfoList);
 		}
 	}
 
-	private void addCards(final SetInfoLoader sil, final List<CardInfo> cardInfoList) throws SQLException {
+	private void addCards(final List<CardInfo> cardInfoList) throws SQLException {
 		int count = 0;
 		final int batchSize = 500;
 		for(CardInfo c : cardInfoList) {
-			if(addCardIfNew(c, sil)) {
-				count++;
-			}
+			addCard(c);
+			count++;
 			if(count == batchSize)  {
 				count = 0;
 				mtgaCollectionDbDAO.executeBatchedCards();
@@ -112,64 +110,40 @@ public class ImportMtgaRun implements Run {
 		}
 	}
 
-	private boolean addCardIfNew(final CardInfo c, final SetInfoLoader sil) {
+	private void addCard(final CardInfo c) {
 		try {
-			boolean cardAdded = mtgaCollectionDbDAO.addCardIfNewBatched(c, sil);
-			if (cardAdded) {
-				logger.info("Added: {}", c);
-			}
-			return cardAdded;
+			mtgaCollectionDbDAO.addCardBatched(c);
+			logger.info("Added: {}", c);
 		} catch (SQLException e) {
 			throw new IllegalStateException("SQL-Error while adding " + c, e);
 		}
 	}
 
 	/**
-	 * Searches for unknown sets and adds them to the database.
+	 * Collects all sets from the card list and adds them to the database.
 	 *
 	 * @return true if Sets were added, otherwise false
+	 * @throws IllegalStateException if a set could not be added
 	 */
-	private boolean updateSets(final List<MtgaCard> allCards, final SetInfoLoader setInfoLoader)
+	private void addSets(final List<MtgaCard> allCards)
 			throws IOException, InterruptedException, SQLException {
-		Set<String> unknownSets = allCards.stream()
+		Set<String> allSets = allCards.stream()
 				.map(MtgaCard::getSet)
-				.filter(s -> setInfoLoader.getByCode(s) == setInfoLoader.getUnknownSet())
 				.collect(Collectors.toSet());
-		if(unknownSets.isEmpty())
-			return false;
 
-		return loadAndAddUnknownSets(unknownSets);
-	}
-
-	/**
-	 * Loads Set information from Scryfall and adds them to the database if found.
-	 *
-	 * @param unknownSets Set codes of all unknown sets.
-	 */
-	private boolean loadAndAddUnknownSets(final Set<String> unknownSets)
-			throws IOException, InterruptedException, SQLException {
-		boolean oneAdded = false;
-		for(String unknownSet : unknownSets) {
-			Optional<ScryfallSetInfo> setInfo = Stream.of(
-						scryfallDAO.getSet(ScryfallSetQuirk.translateToScryfall(unknownSet)),
-						ScryfallSetQuirk.createFakeScryfallSet(unknownSet))
+		for (String set : allSets) {
+			ScryfallSetInfo setInfo = Stream.of(
+						scryfallDAO.getSet(ScryfallSetQuirk.translateToScryfall(set)),
+						ScryfallSetQuirk.createFakeScryfallSet(set))
 					.filter(Optional::isPresent)
 					.map(Optional::get)
-					.findFirst();
+					.findFirst()
+					.orElseThrow(() -> new IllegalStateException("set %s could not be added".formatted(set)));
 
-			if(setInfo.isPresent()) {
-				mtgaCollectionDbDAO.addSetFromScryfallBatch(setInfo.get());
-				logger.info("{} was added", () -> setInfo.get().code());
-				oneAdded = true;
-			} else {
-				logger.warn("Set {} could not be found in Scryfall!", unknownSet);
-			}
+			mtgaCollectionDbDAO.addSetFromScryfallBatch(setInfo);
+			logger.info("{} was added", setInfo::code);
 		}
-		if(oneAdded) {
-			mtgaCollectionDbDAO.executeBatchedSets();
-		}
-
-		return oneAdded;
+		mtgaCollectionDbDAO.executeBatchedSets();
 	}
 
 	private void doIfUnmappable(final MappingResult<MtgaCard, CardInfo> mr) {
@@ -194,7 +168,7 @@ public class ImportMtgaRun implements Run {
 
 	@Override
 	public String getDescription() {
-		return "Imports Cards from MTGA. New Sets are loaded with Scryfall.";
+		return "Imports alls cards and sets from MTGA. Additional data for sets is loaded from Scryfall.";
 	}
 
 }

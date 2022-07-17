@@ -14,7 +14,6 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import hirsizlik.mtgacollection.database.MtgaCollectionDbDAO;
 import hirsizlik.mtgacollection.properties.DataLoader;
 
 /**
@@ -50,11 +49,6 @@ public class InitRun implements Run {
 		if(!Files.exists(dataloader.getPathToProperties())) {
 			LOG.warn("Properties file is missing and will be created at {}", dataloader.getPathToProperties());
 			createPropertiesFile();
-		}
-		// check database
-		if(!Files.exists(dataloader.getPathToDatabase())) {
-			LOG.warn("Database is missing and will be created at {}", dataloader.getPathToDatabase());
-			createDatabase();
 		}
 	}
 
@@ -115,15 +109,9 @@ public class InitRun implements Run {
 		return "Y".equalsIgnoreCase(answer);
 	}
 
-	private void createDatabase() throws SQLException {
-		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dataloader.getPathToDatabase())){
-			mtgaCollectionDbDAO.createTables();
-		}
-	}
-
 	@Override
 	public String getDescription() {
-		return "Starts the initiation. The properties and the database will be created";
+		return "Starts the initiation. The properties will be created";
 	}
 
 }
