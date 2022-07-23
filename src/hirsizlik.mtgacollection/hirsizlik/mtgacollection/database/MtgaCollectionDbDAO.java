@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.sqlite.SQLiteConfig;
+
 import hirsizlik.mtgacollection.bo.CardAmount;
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
@@ -32,14 +34,18 @@ public class MtgaCollectionDbDAO implements AutoCloseable{
 	private PreparedStatement psInsertNewSet;
 
 	/**
-	 * Constructs a new instance, also opening a connection to the database and preparing some statements.
+	 * Constructs a new instance and opening a connection to the database.
 	 * @param toDB the path to the database
+	 * @param readOnly if the database should be opened read only
 	 * @throws IllegalStateException wrapped ClassNotFoundException or SQLException, neither should ever happen
 	 */
-	public MtgaCollectionDbDAO(final Path toDB) {
+	public MtgaCollectionDbDAO(final Path toDB, final boolean readOnly) {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString());
+			SQLiteConfig config = new SQLiteConfig();
+			config.setReadOnly(readOnly);
+			config.enforceForeignKeys(true);
+			c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString(), config.toProperties());
 			c.setAutoCommit(false);
 		} catch (ClassNotFoundException | SQLException e) {
 			throw new IllegalStateException(e);

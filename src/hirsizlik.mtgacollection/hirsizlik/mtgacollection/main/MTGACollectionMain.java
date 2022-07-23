@@ -38,7 +38,7 @@ public class MTGACollectionMain {
 			return;
 		}
 
-		try(MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
+		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), true)) {
 			List<Run> runList = createRunList(dl, mtgaCollectionDbDAO, pa.additionalArguments());
 			execTheChosenOne(pa.runName(), runList);
 		}
@@ -47,7 +47,7 @@ public class MTGACollectionMain {
 
 	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException {
 		new InitPropertiesRun(dl).run();
-		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase())) {
+		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), false)) {
 			// then import all cards and sets as normal
 			new ImportMtgaRun(loadProperties(dl), mtgaCollectionDbDAO).run();
 		}
