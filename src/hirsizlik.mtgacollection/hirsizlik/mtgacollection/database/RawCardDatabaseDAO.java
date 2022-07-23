@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
+import org.sqlite.SQLiteConfig;
 
 /**
  * Access to Raw_CardDatabase in MTGA to load localized names of cards.
@@ -28,9 +29,9 @@ public class RawCardDatabaseDAO implements AutoCloseable {
 	public RawCardDatabaseDAO(final Path toDB) {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			Properties p = new Properties();
-			p.setProperty("open_mode", "1");// "1" == read only
-			c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString(), p);
+			SQLiteConfig config = new SQLiteConfig();
+			config.setReadOnly(true);
+			c = DriverManager.getConnection("jdbc:sqlite:" + toDB.toAbsolutePath().toString(), config.toProperties());
 			c.setReadOnly(true);
 		} catch (ClassNotFoundException | SQLException e) {
 			throw new IllegalStateException(e);
