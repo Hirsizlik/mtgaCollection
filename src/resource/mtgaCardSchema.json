@@ -6,7 +6,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "grpid": {
+                "grpId": {
                     "type": "integer"
                 },
                 "titleId": {
@@ -46,9 +46,6 @@
                     "type": "string"
                 },
                 "altDeckLimit": {
-                    "type": "null"
-                },
-                "cmc": {
                     "type": "integer"
                 },
                 "rarity": {
@@ -67,22 +64,13 @@
                     "type": "integer"
                 },
                 "types": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "subtypes": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "supertypes": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "cardTypeTextId": {
                     "type": "integer"
@@ -91,74 +79,40 @@
                     "type": "integer"
                 },
                 "colors": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "indicator": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "frameColors": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "frameDetails": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 },
                 "rawFrameDetails": {
                     "type": "string"
                 },
                 "extraFrameDetails": {
-                    "type": "object",
-                    "$ref": "#/definitions/ExtraFrameDetail"
+                    "type": "string"
+                },
+                "watermark": {
+                    "type": "string"
                 },
                 "colorIdentity": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "abilities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Ability"
-                    }
+                    "type": "string"
                 },
                 "hiddenAbilities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Ability"
-                    }
+                    "type": "string"
                 },
                 "TextChangeData": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "ChangedAbilityId": {
-                            "type": "integer"
-                        },
-                        "ChangeSourceId": {
-                            "type": "integer"
-                        },
-                        "OriginalAbilityId": {
-                            "type": "integer"
-                        }
-                    }
+                    "type": "string"
                 },
                 "linkedFaces": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "castingcost": {
                     "type": "string"
@@ -170,10 +124,7 @@
                     "type": "boolean"
                 },
                 "knownSupportedStyles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 },
                 "RebalancedCardLink": {
                     "type": "integer"
@@ -182,65 +133,13 @@
                     "type": "string"
                 },
                 "abilityIdToLinkedTokenGrpId": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
+                    "type": "string"
                 },
                 "linkedAbilityTemplateCardGrpIds": {
-                    "type": "array",
-                    "items": {
-                       "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "abilityIdToLinkedConjurations": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "$ref": "#/definitions/Conjuration"
-                        }
-                    }
-                }
-            }
-        },
-        "Ability": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "Id": {
-                    "type": "integer"
-                },
-                "TextId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "ExtraFrameDetail": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "1": {
                     "type": "string"
-                },
-                "2": {
-                    "type": "string"
-                }
-            }
-        },
-        "Conjuration": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "ConjurationType": {
-                    "type": "integer"
-                },
-                "CardGrpId": {
-                    "type": "integer"
                 }
             }
         }
