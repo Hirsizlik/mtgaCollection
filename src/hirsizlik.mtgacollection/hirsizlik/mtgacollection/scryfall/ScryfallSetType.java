@@ -16,6 +16,8 @@ public enum ScryfallSetType {
 	ALCHEMY(true),
 	/** Masterpiece Series premium foil cards */
 	MASTERPIECE(true),
+	/** A Commander-oriented gift set */
+	ARSENAL(true),
 	/** From the Vault gift sets */
 	FROM_THE_VAULT(true),
 	/** Spellbook series gift sets */
