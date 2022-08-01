@@ -33,24 +33,30 @@ public class MTGACollectionMain {
 		ProgramArguments pa = ap.parseArguments();
 		DataLoader dl = DataLoaderFactory.getDataLoader(pa);
 
-		if(dl.isSomethingMissing()) {
-			startInitRoutine(dl);
-			return;
+		if (!Files.exists(dl.getPathToProperties())) {
+			new InitPropertiesRun(dl).run();
+		}
+		Properties properties = loadProperties(dl);
+		MtgaFiles mtgaFiles = new MtgaFiles(properties);
+		if (!isCurrentDatabase(dl, properties, mtgaFiles)) {
+			Files.deleteIfExists(dl.getPathToDatabase());
+			try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), false)) {
+				new ImportMtgaRun(mtgaCollectionDbDAO, mtgaFiles).run();
+			}
 		}
 
 		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), true)) {
-			List<Run> runList = createRunList(dl, mtgaCollectionDbDAO, pa.additionalArguments());
+			List<Run> runList = createRunList(properties, mtgaCollectionDbDAO, pa.additionalArguments());
 			execTheChosenOne(pa.runName(), runList);
 		}
-
 	}
 
-	private static void startInitRoutine(final DataLoader dl) throws RunException, IOException {
-		new InitPropertiesRun(dl).run();
-		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), false)) {
-			// then import all cards and sets as normal
-			new ImportMtgaRun(loadProperties(dl), mtgaCollectionDbDAO).run();
+	private static boolean isCurrentDatabase(final DataLoader dl, final Properties p, final MtgaFiles mf) {
+		if (!Files.exists(dl.getPathToDatabase())) {
+			return false;
 		}
+
+		return true; // TODO checkVersionAndHashes
 	}
 
 	/**
@@ -70,19 +76,16 @@ public class MTGACollectionMain {
 
 	/**
 	 * Creates the list of runs.
-	 * @param dl the DataLoader, used for path to properties. Those properties may be needed in the runs.
+	 * @param p the properties
 	 * @param mtgaCollectionDbDAO the DAO to access the database
 	 * @param additionalArguments additional arguments which may be used in the runs.
 	 * @return the list of runs
 	 */
-	private static List<Run> createRunList(final DataLoader dl, final MtgaCollectionDbDAO mtgaCollectionDbDAO,
-				final List<String> additionalArguments) throws IOException {
-		Properties p = loadProperties(dl);
-
+	private static List<Run> createRunList(final Properties p, final MtgaCollectionDbDAO mtgaCollectionDbDAO,
+			final List<String> additionalArguments) {
 		return List.of(
 				new DefaultRun(p, mtgaCollectionDbDAO),
 				new AllCardsRun(p, mtgaCollectionDbDAO, additionalArguments),
-				new ImportMtgaRun(p, mtgaCollectionDbDAO),
 				new VersionRun());
 	}
 
