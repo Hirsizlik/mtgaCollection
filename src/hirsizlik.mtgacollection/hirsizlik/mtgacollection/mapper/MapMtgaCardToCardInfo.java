@@ -57,14 +57,14 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 		// otherwise it is empty
 		boolean inBooster = checkInBooster(mtgaCard);
 
-		CardInfo ci = new CardInfo(mtgaCard.getGrpid(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()),
+		CardInfo ci = new CardInfo(mtgaCard.getGrpId(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()),
 				setInfo, inBooster);
 
 		return MappingResult.createOk(mtgaCard, ci);
 	}
 
 	private boolean checkInBooster(final MtgaCard mtgaCard) {
-		if(mtgaCard.getGrpid() == 48499) {
+		if(mtgaCard.getGrpId() == 48499) {
 			// 48499 Hanna, Ship's Navigator should be inBooster = N,
 			// but would be Y as it has no "DigitalReleaseSet", other similar Brawl cards have it set
 			return false;
