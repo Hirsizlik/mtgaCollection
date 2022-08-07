@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import hirsizlik.mtgacollection.bo.SetInfo;
 
@@ -40,6 +41,20 @@ public class SetInfoLoader {
 	 */
 	public SetInfo getByCode(final String code) {
 		return Objects.requireNonNull(setMapByCode.get(code));
+	}
+
+	/**
+	 * Returns the Set with the specified code. Returns an empty Optional if the code is null.
+	 *
+	 * @param code the set code
+	 * @return an Optional with the SetInfo with that code, empty if the code was null
+	 * @throws NullPointerException if no set with that code was found (except null)
+	 */
+	public Optional<SetInfo> getByCodeNullFriendly(final String code) {
+		if (code == null) {
+			return Optional.empty();
+		}
+		return Optional.of(setMapByCode.get(code));
 	}
 
 	/**

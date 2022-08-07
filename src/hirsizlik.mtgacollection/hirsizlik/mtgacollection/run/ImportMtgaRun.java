@@ -2,6 +2,7 @@ package hirsizlik.mtgacollection.run;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class ImportMtgaRun implements Run {
 	public void run() throws RunException {
 		try {
 			startRun();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 			throw new RunException(e);
 		}
@@ -73,6 +74,7 @@ public class ImportMtgaRun implements Run {
 
 			addCards(cardInfoList);
 		}
+		mtgaCollectionDbDAO.setHashes(mtgaFiles);
 	}
 
 	private void addCards(final List<CardInfo> cardInfoList) {
@@ -100,7 +102,8 @@ public class ImportMtgaRun implements Run {
 	 */
 	private void addSets(final List<MtgaCard> allCards) throws IOException, InterruptedException {
 		Set<String> allSets = allCards.stream()
-				.map(MtgaCard::getSet)
+				.flatMap(mc -> Stream.of(mc.getSet(), mc.getDigitalReleaseSet()))
+				.filter(Objects::nonNull)// DigitalReleaseSet can be null, filter those out
 				.collect(Collectors.toSet());
 
 		for (String set : allSets) {

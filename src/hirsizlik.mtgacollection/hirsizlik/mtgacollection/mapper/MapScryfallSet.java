@@ -34,13 +34,15 @@ public class MapScryfallSet implements Function<ScryfallSet, ScryfallSetInfo> {
 	}
 
 	private static String getSetCode(final ScryfallSet scryfallSet) {
+		final String setFromScryfall;
 		if(scryfallSet.getArenaCode() != null) {
-			return ScryfallSetQuirk.translateToMtga(scryfallSet.getArenaCode().toUpperCase(Locale.ENGLISH));
+			setFromScryfall = scryfallSet.getArenaCode().toUpperCase(Locale.ENGLISH);
 		} else {
 			// SLD (Secret Lair Drops), Arena-only sets (ANA, ANB, AKR, KLR, J21),
 			// JMP (Jumpstart), G18 (M19 Gift Pack), UND (Unsanctioned) and UST (Unstable)
 			LOG.warn("arena_code is null, use code '{}' instead.", scryfallSet.getCode());
-			return scryfallSet.getCode().toUpperCase(Locale.ENGLISH);
+			setFromScryfall = scryfallSet.getCode().toUpperCase(Locale.ENGLISH);
 		}
+		return ScryfallSetQuirk.translateToMtga(setFromScryfall);
 	}
 }
