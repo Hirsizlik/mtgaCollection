@@ -17,8 +17,8 @@ public record SetInfo(
 		CardAmount cardAmount,
 		/** the release date*/
 		LocalDate release,
-		/** is the set is a supplemental set (like Jumpstart or Mystical Archive) */
-		boolean isSupplemental) {
+		/** the set type (Premier, Master, etc.) */
+		SetType type) {
 
 	/**
 	 * Checks if the set is released before a certain date

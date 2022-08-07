@@ -56,7 +56,9 @@ public class MTGACollectionMain {
 			return false;
 		}
 
-		return true; // TODO checkVersionAndHashes
+		try (MtgaCollectionDbDAO mtgaCollectionDbDAO = new MtgaCollectionDbDAO(dl.getPathToDatabase(), true)) {
+			return mtgaCollectionDbDAO.checkVersionAndHashes(mf);
+		}
 	}
 
 	/**

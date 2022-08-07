@@ -13,8 +13,7 @@ public final class ScryfallSetQuirk {
 	private ScryfallSetQuirk() {}
 
 	/**
-	 * Translates set codes in Arena which are not found in Scryfall.
-	 * Currently only "CONF" (Conflux) needs to be translated to "CON"
+	 * Translates set codes in Arena to the ones used in Scryfall to find them.
 	 *
 	 * @param mtgaCode the arena setcode
 	 * @return the setcode for Scryfall
@@ -22,6 +21,15 @@ public final class ScryfallSetQuirk {
 	public static String translateToScryfall(final String mtgaCode) {
 		return switch (mtgaCode) {
 		case "CONF" -> "CON";
+		case "Y22-NEO" -> "YNEO";
+		case "Y22-MID" -> "YMID";
+		case "Y22-SNC" -> "YSNC";
+		case "AHA1" -> "HA1";
+		case "AHA2" -> "HA2";
+		case "AHA3" -> "HA3";
+		case "AHA4" -> "HA4";
+		case "AHA5" -> "HA5";
+		case "AHA6" -> "HA6";
 		default -> mtgaCode;
 		};
 	}
@@ -34,13 +42,22 @@ public final class ScryfallSetQuirk {
 	 */
 	public static String translateToMtga(final String scryfallArenaCode) {
 		return switch (scryfallArenaCode) {
-		case "CON" -> "CONF";
 		case "MI" -> "MIR";
 		case "WL" -> "WTH";
 		case "MM" -> "MMQ";
 		case "IN" -> "INV";
 		case "PS" -> "PLS";
 		case "OD" -> "ODY";
+		case "CON" -> "CONF";// those translated in translateToScryfall have to be translated back to MTGA codes
+		case "YNEO" -> "Y22-NEO";
+		case "YMID" -> "Y22-MID";
+		case "YSNC" -> "Y22-SNC";
+		case "HA1" -> "AHA1";
+		case "HA2" -> "AHA2";
+		case "HA3" -> "AHA3";
+		case "HA4" -> "AHA4";
+		case "HA5" -> "AHA5";
+		case "HA6" -> "AHA6";
 		default -> scryfallArenaCode;
 		};
 	}
@@ -61,6 +78,12 @@ public final class ScryfallSetQuirk {
 			// Scryfall used YMID, YNEO and YSNC instead
 			return Optional.of(new ScryfallSetInfo("Alchemy 2022", "Y22", ScryfallSetType.ALCHEMY,
 					LocalDate.of(2021, 12, 9)));
+		}
+
+		if ("BC20".equals(mtgaCode)) {
+			// Rhys the Redeemed and the other Brawl commanders used this as DigitalReleaseSet
+			return Optional.of(new ScryfallSetInfo("Brawl Commander", "BC20", ScryfallSetType.PROMO,
+					LocalDate.of(2019, 12, 12)));
 		}
 
 		return Optional.empty();

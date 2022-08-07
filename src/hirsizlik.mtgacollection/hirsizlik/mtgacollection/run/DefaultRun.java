@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.SetInfo;
 import hirsizlik.mtgacollection.bo.SetStatistic;
+import hirsizlik.mtgacollection.bo.SetType;
 import hirsizlik.mtgacollection.bo.Statistic;
 import hirsizlik.mtgacollection.bo.TotalStatistic;
 import hirsizlik.mtgacollection.bo.inventory.Inventory;
@@ -141,7 +142,7 @@ public class DefaultRun implements Run{
 
 	private LocalDate determineStandardStart(final SetInfoLoader setInfoLoader) {
 		List<SetInfo> standardCandidates = setInfoLoader.getAllSets().stream()
-				.filter(s -> !s.isSupplemental())
+				.filter(s -> s.type() == SetType.PREMIER)
 				// standard always starts with a fall set, so either in September or October
 				.filter(s -> s.release().getMonth() == Month.SEPTEMBER || s.release().getMonth() == Month.OCTOBER)
 				.sorted(Comparator.comparing(SetInfo::release).reversed())

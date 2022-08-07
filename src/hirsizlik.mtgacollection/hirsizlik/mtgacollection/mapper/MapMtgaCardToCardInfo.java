@@ -45,6 +45,13 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 			throw new MappingException("Unknown set: " + mtgaCard.getSet(), mtgaCard);
 		}
 
+		Optional<SetInfo> digitalSetInfo;
+		try {
+			digitalSetInfo = sil.getByCodeNullFriendly(mtgaCard.getDigitalReleaseSet());
+		} catch (NullPointerException e) {
+			throw new MappingException("Unknown digitalSet: " + mtgaCard.getDigitalReleaseSet(), mtgaCard);
+		}
+
 		String name;
 		try {
 			name = rawCardDatabaseDAO.getEnglishNonFormattedLocalization(mtgaCard.getTitleId());
@@ -58,7 +65,7 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 		boolean inBooster = checkInBooster(mtgaCard);
 
 		CardInfo ci = new CardInfo(mtgaCard.getGrpId(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()),
-				setInfo, inBooster);
+				setInfo, inBooster, digitalSetInfo, Boolean.TRUE.equals(mtgaCard.getIsRebalanced()));
 
 		return Optional.of(ci);
 	}
@@ -75,7 +82,7 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 			return false;
 		}
 
-		return mtgaCard.getCollectorMax() != null && (mtgaCard.getDigitalReleaseSet() ==  null ||
+		return mtgaCard.getCollectorMax() != null && (mtgaCard.getDigitalReleaseSet() == null ||
 				mtgaCard.getDigitalReleaseSet().startsWith("Y22"));
 	}
 }
