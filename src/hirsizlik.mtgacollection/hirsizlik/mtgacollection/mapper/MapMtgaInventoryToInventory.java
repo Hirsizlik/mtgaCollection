@@ -22,19 +22,23 @@ public class MapMtgaInventoryToInventory implements Mapper<PlayerInventory, Inve
 		return MappingResult.createOk(t,
 			new Inventory(
 				new Wildcard(
-					t.getWildCardCommons(),
-					t.getWildCardUnCommons(),
-					t.getWildCardRares(),
-					t.getWildCardMythics(),
-					t.getWcTrackPosition()),
+					defaultZero(t.getWildCardCommons()),
+					defaultZero(t.getWildCardUnCommons()),
+					defaultZero(t.getWildCardRares()),
+					defaultZero(t.getWildCardMythics()),
+					defaultZero(t.getWcTrackPosition())),
 				new Currency(
-					t.getGold(),
-					t.getGems(),
+					defaultZero(t.getGold()),
+					defaultZero(t.getGems()),
 					mapTokens(t.getCustomTokens())),
-				t.getTotalVaultProgress(),
+				defaultZero(t.getTotalVaultProgress()),
 				mapBooster(t.getBoosters())
 			)
 		);
+	}
+
+	private static int defaultZero(final Integer i) {
+		return i != null ? i : 0;
 	}
 
 	private List<Booster> mapBooster(final List<hirsizlik.mtgacollection.jackson.inventory.Booster> boosters){
