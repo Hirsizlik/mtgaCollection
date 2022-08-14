@@ -83,7 +83,7 @@ public class DefaultRun implements Run{
 
 		for (Integer id : cardAmountMap.keySet()) {
 			CardInfo c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
-			if (!c.name().startsWith("A-")) { // TODO extend Database to recognize digital only cards
+			if (!c.rebalanced()) {
 				cardsBySet.get(c.set()).add(c);
 			} else if (logger.isDebugEnabled()) {
 				// otherwise Alchemy rebalanced cards would count doubled
