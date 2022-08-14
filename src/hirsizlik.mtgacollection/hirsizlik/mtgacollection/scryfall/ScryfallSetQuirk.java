@@ -70,7 +70,9 @@ public final class ScryfallSetQuirk {
 	 */
 	public static Optional<ScryfallSetInfo> createFakeScryfallSet(final String mtgaCode) {
 		if ("ArenaSUP".equals(mtgaCode)) {
-			return Optional.of(new ScryfallSetInfo("Arena Supplemental (unused)", "ArenaSUP", ScryfallSetType.FUNNY,
+			// contains event emblems like the one used for Momir
+			// no actual cards have this set
+			return Optional.of(new ScryfallSetInfo("Arena Supplemental", "ArenaSUP", ScryfallSetType.TOKEN,
 					LocalDate.of(1970, 1, 1)));
 		}
 
