@@ -11,8 +11,14 @@ import java.util.Arrays;
 public class AsciiStringHelper {
 
 	private enum Color {
-		WHITE("\033[97m"), CYAN("\033[96m"), YELLOW("\033[93m"), RED("\033[91m"), DEFAULT("\033[0m"), BOLD("\033[1m"),
-		ITALIC("\033[3m");
+		DEFAULT("\033[0m"),
+		BOLD("\033[1m"),
+		ITALIC("\033[3m"),
+		UNDERLINE("\033[4m"),
+		RED("\033[91m"),
+		YELLOW("\033[93m"),
+		CYAN("\033[96m"),
+		WHITE("\033[97m");
 
 		private final String sequence;
 
@@ -37,10 +43,11 @@ public class AsciiStringHelper {
 	public static String getAsciiString(final String codedString) {
 		/*
 		 * Combiner is only used if executed in parallel.
-		 * It would have to combine to partially decoded strings to one.
+		 * It would have to combine two partially decoded strings to one.
 		 * That would be complicated, so instead just use sequential() to be sure and use "null" as combiner.
-		 *
 		 */
-		return Arrays.stream(Color.values()).sequential().reduce(codedString, (s, c) -> c.replace(s), (s1, s2) -> null);
+		return Arrays.stream(Color.values())
+				.sequential()
+				.reduce(codedString, (s, c) -> c.replace(s), (s1, s2) -> null);
 	}
 }
