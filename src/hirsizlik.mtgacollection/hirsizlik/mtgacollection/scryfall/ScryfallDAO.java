@@ -47,7 +47,7 @@ public class ScryfallDAO {
 		ObjectMapper omapper = new ObjectMapper();
 		ScryfallSet ss = omapper.readValue(resp.get(), ScryfallSet.class);
 
-		return Optional.of(new MapScryfallSet().applyDirect(ss));
+		return Optional.of(new MapScryfallSet().apply(ss));
 	}
 
 	private Optional<String> call(final String uri) throws InterruptedException, IOException {
@@ -73,7 +73,7 @@ public class ScryfallDAO {
 	private void sleepIfToFastAndSetLastAccess() throws InterruptedException {
 		Instant now = Instant.now();
 		Duration sinceLastAccess = Duration.between(lastAccess, now);
-		if(sinceLastAccess.compareTo(MIN_DURATION_BETWEEN_CALLS) < 0) {
+		if (sinceLastAccess.compareTo(MIN_DURATION_BETWEEN_CALLS) < 0) {
 			Thread.sleep(MIN_DURATION_BETWEEN_CALLS.minus(sinceLastAccess).toMillis());
 		}
 

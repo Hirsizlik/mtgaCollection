@@ -1,6 +1,7 @@
 package hirsizlik.mtgacollection.mapper;
 
 import java.util.List;
+import java.util.function.Function;
 
 import hirsizlik.mtgacollection.bo.inventory.Booster;
 import hirsizlik.mtgacollection.bo.inventory.Currency;
@@ -15,25 +16,23 @@ import hirsizlik.mtgacollection.jackson.inventory.PlayerInventory;
  *
  * @author Markus Schagerl
  */
-public class MapMtgaInventoryToInventory implements Mapper<PlayerInventory, Inventory>{
+public class MapMtgaInventoryToInventory implements Function<PlayerInventory, Inventory>{
 
 	@Override
-	public MappingResult<PlayerInventory, Inventory> apply(final PlayerInventory t) {
-		return MappingResult.createOk(t,
-			new Inventory(
-				new Wildcard(
-					defaultZero(t.getWildCardCommons()),
-					defaultZero(t.getWildCardUnCommons()),
-					defaultZero(t.getWildCardRares()),
-					defaultZero(t.getWildCardMythics()),
-					defaultZero(t.getWcTrackPosition())),
-				new Currency(
-					defaultZero(t.getGold()),
-					defaultZero(t.getGems()),
-					mapTokens(t.getCustomTokens())),
-				defaultZero(t.getTotalVaultProgress()),
-				mapBooster(t.getBoosters())
-			)
+	public Inventory apply(final PlayerInventory t) {
+		return new Inventory(
+			new Wildcard(
+				defaultZero(t.getWildCardCommons()),
+				defaultZero(t.getWildCardUnCommons()),
+				defaultZero(t.getWildCardRares()),
+				defaultZero(t.getWildCardMythics()),
+				defaultZero(t.getWcTrackPosition())),
+			new Currency(
+				defaultZero(t.getGold()),
+				defaultZero(t.getGems()),
+				mapTokens(t.getCustomTokens())),
+			defaultZero(t.getTotalVaultProgress()),
+			mapBooster(t.getBoosters())
 		);
 	}
 

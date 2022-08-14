@@ -17,7 +17,6 @@ import hirsizlik.mtgacollection.database.SetInfoLoader;
 import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
 import hirsizlik.mtgacollection.main.MtgaFiles;
 import hirsizlik.mtgacollection.mapper.MapMtgaCardToCardInfo;
-import hirsizlik.mtgacollection.mapper.MappingResult;
 import hirsizlik.mtgacollection.parser.MtgaCardParser;
 import hirsizlik.mtgacollection.scryfall.ScryfallDAO;
 import hirsizlik.mtgacollection.scryfall.ScryfallSetInfo;
@@ -66,9 +65,10 @@ public class ImportMtgaRun implements Run {
 			SetInfoLoader sil = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 			MapMtgaCardToCardInfo cardMapper = new MapMtgaCardToCardInfo(rawCardDatabase, sil);
 
-			List<CardInfo> cardInfoList = cardData.stream().map(cardMapper)
-					.filter(mr -> mr.returnTrueIfOkOrElse(this::doIfUnmappable))
-					.map(MappingResult::get)
+			List<CardInfo> cardInfoList = cardData.stream()
+					.map(cardMapper)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
 					.toList();
 
 			addCards(cardInfoList);
@@ -116,13 +116,6 @@ public class ImportMtgaRun implements Run {
 			logger.info("{} was added", setInfo::code);
 		}
 		mtgaCollectionDbDAO.executeBatchedSets();
-	}
-
-	private void doIfUnmappable(final MappingResult<MtgaCard, CardInfo> mr) {
-		if(mr.getException().isImportant()) {
-			logger.error("Error while mapping the card: {}; Error: {}", mr.getBase(),
-					mr.getException());
-		}
 	}
 
 	@Override

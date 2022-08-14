@@ -29,7 +29,7 @@ public class LogfileParser {
 		ObjectMapper omapper = new ObjectMapper();
 		PlayerInventory pi = omapper.readValue(jsonBlocks.get(INVENTORY_INFO), PlayerInventory.class);
 		// Mapping should always be successful
-		inventory = new MapMtgaInventoryToInventory().apply(pi).get();
+		inventory = new MapMtgaInventoryToInventory().apply(pi);
 	}
 
 	/**
