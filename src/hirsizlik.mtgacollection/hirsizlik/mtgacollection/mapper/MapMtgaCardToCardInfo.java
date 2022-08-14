@@ -47,6 +47,7 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 
 		Optional<SetInfo> digitalSetInfo;
 		try {
+			fixDigitalRelease(mtgaCard);
 			digitalSetInfo = sil.getByCodeNullFriendly(mtgaCard.getDigitalReleaseSet());
 		} catch (NullPointerException e) {
 			throw new MappingException("Unknown digitalSet: " + mtgaCard.getDigitalReleaseSet(), mtgaCard);
@@ -70,12 +71,18 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 		return Optional.of(ci);
 	}
 
-	private boolean checkInBooster(final MtgaCard mtgaCard) {
-		if (mtgaCard.getGrpId() == 48499) {
-			// 48499 Hanna, Ship's Navigator should be inBooster = N,
-			// but would be Y as it has no "DigitalReleaseSet", other similar Brawl cards have it set
-			return false;
+	private void fixDigitalRelease(final MtgaCard mtgaCard) {
+		if (mtgaCard.getGrpId() == 48499 || mtgaCard.getGrpId() == 49077) {
+			// 48499, Hanna, Ship's Navigator and 49077, Talrand, Sky Summoner
+			// both don't have a DigitalReleaseSet, should be the same as the other Brawl Commanders
+			mtgaCard.setDigitalReleaseSet("BC20");
+		} else if (mtgaCard.getGrpId() == 72243) {
+			// seems MTGA got their Talrands mixed up, the one from JMP shouldn't have one
+			mtgaCard.setDigitalReleaseSet(null);
 		}
+	}
+
+	private boolean checkInBooster(final MtgaCard mtgaCard) {
 		if ("ANB".equals(mtgaCard.getSet())) {
 			// ANB has a collectorMax set although there is no ANB pack
 			// (?booster finds them in Arena)
