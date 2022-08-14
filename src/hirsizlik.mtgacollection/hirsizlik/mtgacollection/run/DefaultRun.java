@@ -78,19 +78,7 @@ public class DefaultRun implements Run{
 
 		SetInfoLoader setInfoLoader = new SetInfoLoader(mtgaCollectionDbDAO.getSetMap(true, true));
 		Map<Integer, Integer> cardAmountMap = mtgaTrackerDaemon.getCards();
-		Map<SetInfo, List<CardInfo>> cardsBySet = new HashMap<>();
-		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
-
-		for (Integer id : cardAmountMap.keySet()) {
-			CardInfo c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
-			if (!c.rebalanced()) {
-				cardsBySet.get(c.set()).add(c);
-			} else if (logger.isDebugEnabled()) {
-				// otherwise Alchemy rebalanced cards would count doubled
-				logger.debug("Skip Alchemy rebalanced card {} {}", c.set(), c.name());
-			}
-		}
-
+		Map<SetInfo, List<CardInfo>> cardsBySet = createCardsBySetMap(setInfoLoader, cardAmountMap);
 		LocalDate standardStart = determineStandardStart(setInfoLoader);
 		List<Statistic> setStatistics = setInfoLoader.getAllSets()
 			.stream()
@@ -105,6 +93,24 @@ public class DefaultRun implements Run{
 
 		logger.info("---");
 		printStatisticsByFormat(setStatistics, formatter);
+	}
+
+	private Map<SetInfo, List<CardInfo>> createCardsBySetMap(final SetInfoLoader setInfoLoader,
+			final Map<Integer, Integer> cardAmountMap) {
+		Map<SetInfo, List<CardInfo>> cardsBySet = new HashMap<>();
+		setInfoLoader.getAllSets().forEach(x -> cardsBySet.put(x, new ArrayList<>(124)));
+		for (Integer id : cardAmountMap.keySet()) {
+			CardInfo c = mtgaCollectionDbDAO.getCard(id, setInfoLoader);
+			if (!c.rebalanced()) {
+				if (c.set().code().equals("Y22")) {
+					// use the digitalReleaseSet for Alchemy sets instead
+					cardsBySet.get(c.digitalSet().orElseThrow()).add(c);
+				} else {
+					cardsBySet.get(c.set()).add(c);
+				}
+			}
+		}
+		return cardsBySet;
 	}
 
 	private void printInventory() throws IOException {
