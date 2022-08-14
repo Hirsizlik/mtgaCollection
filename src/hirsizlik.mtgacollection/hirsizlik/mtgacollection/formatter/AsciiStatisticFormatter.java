@@ -18,8 +18,14 @@ public class AsciiStatisticFormatter implements StatisticFormatter{
 	public String format(final Statistic statistic) {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("@BOLD");
-		if(!statistic.isInStandard()) {
+		if (statistic.isInStandard()) {
+			// nothing, just bold
+		} else if(statistic.isInAlchemy()) {
+			sb.append("@UNDERLINE");
+		} else if(statistic.isInPioneer()) {
 			sb.append("@ITALIC");
+		} else /* all other Historic cards */ {
+			sb.append("@UNDERLINE@ITALIC");
 		}
 		sb.append(String.format("%s - %d / %d (%.1f%%)@DEFAULT%n",
 				statistic.getName(), statistic.getOwnedTotal(),
