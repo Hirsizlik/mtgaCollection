@@ -41,7 +41,7 @@ public class SetStatistic implements Statistic {
 		ownedByRarity = new EnumMap<>(Rarity.class);
 		var rarityInBoosterMap = cards.stream()
 				.filter(CardInfo::inBooster)
-				.filter(c -> c.set() == set)
+				.filter(c -> c.set() == set || c.digitalSet().map(s -> s == set).orElse(false))
 				.collect(Collectors.groupingBy(CardInfo::rarity));
 
 		Arrays.asList(Rarity.values()).forEach(r -> {

@@ -209,10 +209,14 @@ public class MtgaCollectionDbDAO implements AutoCloseable {
 		String rebalanced = "and c.rebalanced = 'N'";
 		String sql = """
 				SELECT s.code, s.name,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'C' and c.setCode = s.code %1$s %2$s) as common,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'U' and c.setCode = s.code %1$s %2$s) as uncommon,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'R' and c.setCode = s.code %1$s %2$s) as rare,
-				(Select count(c.id) from CardInfo c where c.Rarity = 'M' and c.setCode = s.code %1$s %2$s) as mythic,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'C'
+				    and s.code in (c.setCode, c.digitalSetCode) %1$s %2$s) as common,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'U'
+				    and s.code in (c.setCode, c.digitalSetCode) %1$s %2$s) as uncommon,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'R'
+				    and s.code in (c.setCode, c.digitalSetCode) %1$s %2$s) as rare,
+				(Select count(c.id) from CardInfo c where c.Rarity = 'M'
+				    and s.code in (c.setCode, c.digitalSetCode) %1$s %2$s) as mythic,
 				s.releaseDate, s.type from SetInfo s
 				""".formatted(excludeInBooster ? inBooster : "", excludeRebalanced ? rebalanced : "");
 		try (Statement s = c.createStatement()) {
