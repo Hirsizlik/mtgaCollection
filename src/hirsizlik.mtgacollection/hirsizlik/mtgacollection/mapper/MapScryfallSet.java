@@ -2,6 +2,7 @@ package hirsizlik.mtgacollection.mapper;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,17 +20,17 @@ import hirsizlik.mtgacollection.scryfall.ScryfallSetType;
  * @see ScryfallSet ScryfallSet (from JSON generated class)
  * @see ScryfallSetInfo ScryfallSetInfo (internal class)
  */
-public class MapScryfallSet implements Mapper<ScryfallSet, ScryfallSetInfo> {
+public class MapScryfallSet implements Function<ScryfallSet, ScryfallSetInfo> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
 	@Override
-	public MappingResult<ScryfallSet, ScryfallSetInfo> apply(final ScryfallSet scryfallSet) {
-		return MappingResult.createOk(scryfallSet, new ScryfallSetInfo(
+	public ScryfallSetInfo apply(final ScryfallSet scryfallSet) {
+		return new ScryfallSetInfo(
 				scryfallSet.getName(),
 				getSetCode(scryfallSet),
 				ScryfallSetType.valueOf(scryfallSet.getSetType().toUpperCase(Locale.ENGLISH)),
-				LocalDate.parse(scryfallSet.getReleasedAt())));
+				LocalDate.parse(scryfallSet.getReleasedAt()));
 	}
 
 	private static String getSetCode(final ScryfallSet scryfallSet) {

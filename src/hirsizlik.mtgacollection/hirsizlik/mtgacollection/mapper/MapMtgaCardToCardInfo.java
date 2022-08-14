@@ -1,5 +1,8 @@
 package hirsizlik.mtgacollection.mapper;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
 import hirsizlik.mtgacollection.bo.SetInfo;
@@ -12,7 +15,7 @@ import hirsizlik.mtgacollection.jackson.mtga.card.MtgaCard;
  *
  * @author Markus Schagerl
  */
-public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
+public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardInfo>>{
 
 	private final RawCardDatabaseDAO rawCardDatabaseDAO;
 	private final SetInfoLoader sil;
@@ -29,27 +32,24 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 	}
 
 	@Override
-	public MappingResult<MtgaCard, CardInfo> apply(final MtgaCard mtgaCard) {
-		if (Boolean.TRUE.equals(mtgaCard.getIsToken())) {
-			return MappingResult.createError(mtgaCard, "Card is a token", false);
-		}
-
-		if (Boolean.TRUE.equals(mtgaCard.getIsSecondaryCard())) {
-			return MappingResult.createError(mtgaCard, "Card is secondary (e.g. half of a split card)", false);
+	public Optional<CardInfo> apply(final MtgaCard mtgaCard) {
+		if (Boolean.TRUE.equals(mtgaCard.getIsToken()) || Boolean.TRUE.equals(mtgaCard.getIsSecondaryCard())) {
+			// token or half a split card, do not map
+			return Optional.empty();
 		}
 
 		SetInfo setInfo;
 		try {
 			setInfo = sil.getByCode(mtgaCard.getSet());
 		} catch (NullPointerException e) {
-			return MappingResult.createError(mtgaCard, "Unknown set: " + mtgaCard.getSet());
+			throw new MappingException("Unknown set: " + mtgaCard.getSet(), mtgaCard);
 		}
 
 		String name;
 		try {
 			name = rawCardDatabaseDAO.getEnglishNonFormattedLocalization(mtgaCard.getTitleId());
 		} catch (IllegalStateException e) {
-			return MappingResult.createError(mtgaCard, "Card name could not be found");
+			throw new MappingException("Card name could not be found", mtgaCard);
 		}
 
 		// collectorMax is null if it isn't found in pack
@@ -60,7 +60,7 @@ public class MapMtgaCardToCardInfo implements Mapper<MtgaCard, CardInfo>{
 		CardInfo ci = new CardInfo(mtgaCard.getGrpId(), name, Rarity.valueByMtgaCode(mtgaCard.getRarity()),
 				setInfo, inBooster);
 
-		return MappingResult.createOk(mtgaCard, ci);
+		return Optional.of(ci);
 	}
 
 	private boolean checkInBooster(final MtgaCard mtgaCard) {
