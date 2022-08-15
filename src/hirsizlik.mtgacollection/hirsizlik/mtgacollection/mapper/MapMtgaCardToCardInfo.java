@@ -1,7 +1,9 @@
 package hirsizlik.mtgacollection.mapper;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import hirsizlik.mtgacollection.bo.CardInfo;
 import hirsizlik.mtgacollection.bo.Rarity;
@@ -19,6 +21,11 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 
 	private final RawCardDatabaseDAO rawCardDatabaseDAO;
 	private final SetInfoLoader sil;
+
+	// 1 to 3 digits
+	private static final Pattern COLLECTOR_NUMBER_PATTERN = Pattern.compile("\\d?\\d?\\d");
+	// special art Llanovar elves, Firemind's research, Duress, Ghalta, Primal Hunger
+	private static final List<Integer> SPECIAL_ART_CARDS = List.of(69781, 69780, 70141, 70140);
 
 	/**
 	 * Creates the Mapper.
@@ -88,8 +95,29 @@ public class MapMtgaCardToCardInfo implements Function<MtgaCard, Optional<CardIn
 			// (?booster finds them in Arena)
 			return false;
 		}
-
-		return mtgaCard.getCollectorMax() != null && (mtgaCard.getDigitalReleaseSet() == null ||
-				mtgaCard.getDigitalReleaseSet().startsWith("Y22"));
+		if ("JMP".equals(mtgaCard.getSet()) || "J21".equals(mtgaCard.getSet())) {
+			// the JMP-only cards (Emiel, Muxus, etc.) and the Arena replacements (Archon, Gadwick) have a CollectorMax
+			// in J21 the new digital-only cards (Davriel, Teyo, etc.) have it set
+			// other cards in those set don't have it set, so would result in false
+			// that difference isn't interesting for statistics, instead consider them all as inBooster instead
+			return true;
+		}
+		if (!COLLECTOR_NUMBER_PATTERN.matcher(mtgaCard.getCollectorNumber()).matches()) {
+			// those with a "special" Collector Number like "GR8" from
+			// Vraska, Golgari Queen (the Beta reward) are not in booster
+			return false;
+		}
+		if (SPECIAL_ART_CARDS.contains(mtgaCard.getGrpId())) {
+			// special art cards back when card styles weren't a thing yet
+			return false;
+		}
+		if (mtgaCard.getCollectorMax() == null
+				|| Integer.parseInt(mtgaCard.getCollectorMax()) < Integer.parseInt(mtgaCard.getCollectorNumber())) {
+			// cards with no CollectorMax (Demon of Loathing, THB)
+			// cards with a CollectorMax lower than its CollectorNumber (Nexus of Fate, M19)
+			return false;
+		}
+		// Anthology cards are not in booster
+		return mtgaCard.getDigitalReleaseSet() == null || mtgaCard.getDigitalReleaseSet().startsWith("Y22");
 	}
 }
