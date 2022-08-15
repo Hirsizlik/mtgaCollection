@@ -63,7 +63,7 @@ public class MtgaCollectionDbDAO implements AutoCloseable {
 	 * <ul>
 	 * <li>releaseDate checks if the Text depicts a Date in ISO 8601 format
 	 * <li>type is an enumeration with the following values: <b>P</b>remier, (Re-)<b>M</b>aster,
-	 * Alchem<b>Y</b>, <b>J</b>umpstart, <b>O</b>ther
+	 * Alchem<b>Y</b>, <b>O</b>ther
 	 * <li>rarity is an enumeration with the following values: <b>L</b>and, <b>C</b>ommon, <b>U</b>ncommon,
 	 * <b>R</b>are, <b>M</b>ythic
 	 * <li>setCode is the set code used in arena, and is a foreign key to setInfo
@@ -80,7 +80,7 @@ public class MtgaCollectionDbDAO implements AutoCloseable {
 				"name"            TEXT NOT NULL,
 				"releaseDate"     TEXT NOT NULL CHECK(length(releaseDate)=10 and SUBSTR(releaseDate, 5, 1) = '-'
 				    and SUBSTR(releaseDate, 8, 1) = '-'),
-				"type"  TEXT CHECK (type in ('P', 'M', 'Y', 'J', 'O')) NOT NULL
+				"type"  TEXT CHECK (type in ('P', 'M', 'Y', 'O')) NOT NULL
 				)
 				""";
 		String createCardInfo = """
