@@ -42,7 +42,8 @@ public class MapMtgaInventoryToInventory implements Function<PlayerInventory, In
 
 	private List<Booster> mapBooster(final List<hirsizlik.mtgacollection.jackson.inventory.Booster> boosters){
 		return boosters.stream()
-			.map(b ->new Booster(b.getCount(), b.getCollationId(), b.getSetCode()))
+			.filter(b -> b.getCount() != null)// the inventory can contain booster with no count
+			.map(b -> new Booster(b.getCount(), b.getCollationId(), b.getSetCode()))
 			.toList();
 	}
 
